@@ -1,6 +1,6 @@
 package es.isia.sm.helper;
 
-import es.isia.sm.model.Direccion;
+import es.isia.sm.model.celdas.Direccion;
 import javafx.util.Pair;
 
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class GeneradorEntornoUrbano {
 
-    private char[][] matriz;
+    private Direccion[][] matriz;
     private int filas;
     private int columnas;
     private Random random = new Random();
@@ -18,16 +18,16 @@ public class GeneradorEntornoUrbano {
     public GeneradorEntornoUrbano(int filas, int columnas) {
         this.filas = filas;
         this.columnas = columnas;
-        matriz = new char[filas][columnas];
+        matriz = new Direccion[filas][columnas];
         // inicialmente, todas las casillas son transitables
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                matriz[i][j] = '_';
+                matriz[i][j] = Direccion.TRANSITABLE;
             }
         }
     }
 
-    public char[][] getMatriz() {
+    public Direccion[][] getMatriz() {
         return matriz;
     }
 
@@ -48,7 +48,7 @@ public class GeneradorEntornoUrbano {
             // Si la casilla aleatoria está dentro de los límites, no forma un camino cerrado ni es la casilla inicial,
             // se marca como no transitable
             if (estaDentroLimite(fila, columna) && !generaCaminoCerrado(fila, columna) && !esCasillaInicial(fila, columna)) {
-                matriz[fila][columna] = '0';
+                matriz[fila][columna] = Direccion.BLOQUE;
                 casillasNoTransitables++;
             }
         }
@@ -72,7 +72,7 @@ public class GeneradorEntornoUrbano {
     /**
      * Método que repara las colisiones horizontales de los objetos en la matriz.
      * Recorre la matriz buscando las colisiones horizontales y realiza las reparaciones correspondientes.
-     * Si la colisión se resuelve moviendo el objeto hacia arriba o hacia abajo, se utiliza el carácter '^' o 'v', respectivamente.
+     * Si la colisión se resuelve moviendo el objeto hacia arriba o hacia abajo, se utiliza el carácter Direccion.NORTE o Direccion.SUR, respectivamente.
      *
      * @see GeneradorEntornoUrbano buscarColisionesHorizontales()
      * @see GeneradorEntornoUrbano estaDentroLimite(int, int)
@@ -84,35 +84,35 @@ public class GeneradorEntornoUrbano {
             int distanciaBloqueX = 0;
             int distanciaBloqueY = 0;
 
-            if (estaDentroLimite(fila, puntoColision.x - 1) && matriz[fila][puntoColision.x - 1] != '0')
+            if (estaDentroLimite(fila, puntoColision.x - 1) && matriz[fila][puntoColision.x - 1] != Direccion.BLOQUE)
                 distanciaBloqueX++;
 
-            if (estaDentroLimite(fila, puntoColision.y + 1) && matriz[fila][puntoColision.y + 1] != '0')
+            if (estaDentroLimite(fila, puntoColision.y + 1) && matriz[fila][puntoColision.y + 1] != Direccion.BLOQUE)
                 distanciaBloqueY++;
 
             int cambioY = 0;
             if (distanciaBloqueX < distanciaBloqueY) {
                 cambioY = puntoColision.x;
-                if (!estaDentroLimite(fila + 1, cambioY) || (estaDentroLimite(fila, cambioY - 1) && matriz[fila][cambioY - 1] == '0'))
-                    matriz[fila][cambioY] = '^';
+                if (!estaDentroLimite(fila + 1, cambioY) || (estaDentroLimite(fila, cambioY - 1) && matriz[fila][cambioY - 1] == Direccion.BLOQUE))
+                    matriz[fila][cambioY] = Direccion.NORTE;
                 else
-                    matriz[fila][cambioY] = 'v';
+                    matriz[fila][cambioY] = Direccion.SUR;
             } else {
                 cambioY = puntoColision.y;
-                if (!estaDentroLimite(fila - 1, cambioY) || (estaDentroLimite(fila, cambioY + 1) && matriz[fila][cambioY + 1] == '0'))
-                    matriz[fila][cambioY] = 'v';
+                if (!estaDentroLimite(fila - 1, cambioY) || (estaDentroLimite(fila, cambioY + 1) && matriz[fila][cambioY + 1] == Direccion.BLOQUE))
+                    matriz[fila][cambioY] = Direccion.SUR;
                 else
-                    matriz[fila][cambioY] = '^';
+                    matriz[fila][cambioY] = Direccion.NORTE;
             }
 
             //Evaluamos el cambio
-            if (matriz[fila][cambioY] == '^' &&
-                    (!estaDentroLimite(fila - 1, cambioY) || (matriz[fila - 1][cambioY] == '0' || matriz[fila - 1][cambioY] == 'v')))
-                matriz[fila][cambioY] = 'v';
+            if (matriz[fila][cambioY] == Direccion.NORTE &&
+                    (!estaDentroLimite(fila - 1, cambioY) || (matriz[fila - 1][cambioY] == Direccion.BLOQUE || matriz[fila - 1][cambioY] == Direccion.SUR)))
+                matriz[fila][cambioY] = Direccion.SUR;
 
-            if (matriz[fila][cambioY] == 'v' &&
-                    (!estaDentroLimite(fila + 1, cambioY) || (matriz[fila + 1][cambioY] == '0' || matriz[fila + 1][cambioY] == '^')))
-                matriz[fila][cambioY] = '^';
+            if (matriz[fila][cambioY] == Direccion.SUR &&
+                    (!estaDentroLimite(fila + 1, cambioY) || (matriz[fila + 1][cambioY] == Direccion.BLOQUE || matriz[fila + 1][cambioY] == Direccion.NORTE)))
+                matriz[fila][cambioY] = Direccion.NORTE;
 
         }
     }
@@ -120,8 +120,8 @@ public class GeneradorEntornoUrbano {
     /**
      * Método que repara las colisiones verticales de los objetos en la matriz.
      * Recorre la matriz buscando las colisiones verticales y realiza las reparaciones correspondientes.
-     * Si la colisión se resuelve moviendo el objeto hacia la izquierda o hacia la derecha, se utiliza el carácter '<' o '>', respectivamente.
-     * Si la colisión se resuelve con un semáforo, se usa el carácter '8'.
+     * Si la colisión se resuelve moviendo el objeto hacia la izquierda o hacia la derecha, se utiliza el carácter Direccion.OESTE o Direccion.ESTE, respectivamente.
+     * Si la colisión se resuelve con un semáforo, se usa el carácter Direccion.SEMAFORO.
      *
      * @see GeneradorEntornoUrbano buscarColisionesVerticales()
      * @see GeneradorEntornoUrbano estaDentroLimite(int, int)
@@ -133,68 +133,68 @@ public class GeneradorEntornoUrbano {
 
             //asignar semaforos
             if (estaDentroLimite(puntoColision.x - 1, columna) && estaDentroLimite(puntoColision.x + 1, columna) &&
-                    matriz[puntoColision.x - 1][columna] == matriz[puntoColision.x + 1][columna] && matriz[puntoColision.x - 1][columna] != '0') {
-                matriz[puntoColision.x][columna] = '8';
+                    matriz[puntoColision.x - 1][columna] == matriz[puntoColision.x + 1][columna] && matriz[puntoColision.x - 1][columna] != Direccion.BLOQUE) {
+                matriz[puntoColision.x][columna] = Direccion.SEMAFORO;
                 continue;
             }
             if (estaDentroLimite(puntoColision.y - 1, columna) && estaDentroLimite(puntoColision.y + 1, columna) &&
-                    matriz[puntoColision.y - 1][columna] == matriz[puntoColision.x + 1][columna] && matriz[puntoColision.y - 1][columna] != '0') {
-                matriz[puntoColision.y][columna] = '8';
+                    matriz[puntoColision.y - 1][columna] == matriz[puntoColision.x + 1][columna] && matriz[puntoColision.y - 1][columna] != Direccion.BLOQUE) {
+                matriz[puntoColision.y][columna] = Direccion.SEMAFORO;
                 continue;
             }
 
             int distanciaBloqueX = 0;
             int distanciaBloqueY = 0;
 
-            if (estaDentroLimite(puntoColision.x - 1, columna) && matriz[puntoColision.x - 1][columna] != '0')
+            if (estaDentroLimite(puntoColision.x - 1, columna) && matriz[puntoColision.x - 1][columna] != Direccion.BLOQUE)
                 distanciaBloqueX++;
 
-            if (estaDentroLimite(puntoColision.y + 1, columna) && matriz[puntoColision.y + 1][columna] != '0')
+            if (estaDentroLimite(puntoColision.y + 1, columna) && matriz[puntoColision.y + 1][columna] != Direccion.BLOQUE)
                 distanciaBloqueY++;
 
             int cambioY = 0;
             if (distanciaBloqueX < distanciaBloqueY) {
                 cambioY = puntoColision.x;
-                if (!estaDentroLimite(cambioY, columna + 1) || (estaDentroLimite(cambioY - 1, columna) && matriz[cambioY - 1][columna] == '0'))
-                    matriz[cambioY][columna] = '<';
+                if (!estaDentroLimite(cambioY, columna + 1) || (estaDentroLimite(cambioY - 1, columna) && matriz[cambioY - 1][columna] == Direccion.BLOQUE))
+                    matriz[cambioY][columna] = Direccion.OESTE;
                 else
-                    matriz[cambioY][columna] = '>';
+                    matriz[cambioY][columna] = Direccion.ESTE;
             } else {
                 cambioY = puntoColision.y;
-                if (!estaDentroLimite(cambioY, columna - 1) || (estaDentroLimite(cambioY + 1, columna) && matriz[cambioY + 1][columna] == '0'))
-                    matriz[cambioY][columna] = '>';
+                if (!estaDentroLimite(cambioY, columna - 1) || (estaDentroLimite(cambioY + 1, columna) && matriz[cambioY + 1][columna] == Direccion.BLOQUE))
+                    matriz[cambioY][columna] = Direccion.ESTE;
                 else
-                    matriz[cambioY][columna] = '<';
+                    matriz[cambioY][columna] = Direccion.OESTE;
             }
 
             //Evaluamos el cambio
-            if (matriz[cambioY][columna] == '<' &&
-                    (!estaDentroLimite(cambioY, columna - 1) || (matriz[cambioY][columna - 1] == '0' || matriz[cambioY][columna - 1] == '>')))
-                matriz[cambioY][columna] = '>';
+            if (matriz[cambioY][columna] == Direccion.OESTE &&
+                    (!estaDentroLimite(cambioY, columna - 1) || (matriz[cambioY][columna - 1] == Direccion.BLOQUE || matriz[cambioY][columna - 1] == Direccion.ESTE)))
+                matriz[cambioY][columna] = Direccion.ESTE;
 
-            if (matriz[cambioY][columna] == '>' &&
-                    (!estaDentroLimite(cambioY, columna + 1) || (matriz[cambioY][columna + 1] == '0' || matriz[cambioY][columna + 1] == '<')))
-                matriz[cambioY][columna] = '<';
+            if (matriz[cambioY][columna] == Direccion.ESTE &&
+                    (!estaDentroLimite(cambioY, columna + 1) || (matriz[cambioY][columna + 1] == Direccion.BLOQUE || matriz[cambioY][columna + 1] == Direccion.OESTE)))
+                matriz[cambioY][columna] = Direccion.OESTE;
         }
     }
 
     /**
      * Busca posibles ubicaciones para semáforos en dirección horizontal y los coloca en la matriz.
-     * Si encuentra una ubicación válida, reemplaza la dirección original del semáforo por el símbolo '8'.
+     * Si encuentra una ubicación válida, reemplaza la dirección original del semáforo por el símbolo Direccion.SEMAFORO.
      */
     public void colocarSemaforosHorizontal() {
 
         // Buscar posibles semaforos
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length - 1; j++) {
-                if (matriz[i][j] == '>' || matriz[i][j] == '<') {
+                if (matriz[i][j] == Direccion.ESTE || matriz[i][j] == Direccion.OESTE) {
                     if (estaDentroLimite(i, j - 1) && estaDentroLimite(i, j + 1) && matriz[i][j - 1] == matriz[i][j + 1]) {
-                        if (estaDentroLimite(i - 1, j) && matriz[i - 1][j] == 'v') {
-                            matriz[i][j] = '8';
+                        if (estaDentroLimite(i - 1, j) && matriz[i - 1][j] == Direccion.SUR) {
+                            matriz[i][j] = Direccion.SEMAFORO;
                             continue;
                         }
-                        if (estaDentroLimite(i + 1, j) && matriz[i + 1][j] == '^') {
-                            matriz[i][j] = '8';
+                        if (estaDentroLimite(i + 1, j) && matriz[i + 1][j] == Direccion.NORTE) {
+                            matriz[i][j] = Direccion.SEMAFORO;
                         }
                     }
 
@@ -205,28 +205,28 @@ public class GeneradorEntornoUrbano {
 
     /**
      * Busca posibles ubicaciones para semáforos en dirección verical y los coloca en la matriz.
-     * Si encuentra una ubicación válida, reemplaza la dirección original del semáforo por el símbolo '8'.
+     * Si encuentra una ubicación válida, reemplaza la dirección original del semáforo por el símbolo Direccion.SEMAFORO.
      */
     public void colocarSemaforosVertical() {
 
         // Buscar posibles semaforos
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length - 1; j++) {
-                if (matriz[i][j] == '^' || matriz[i][j] == 'v') {
+                if (matriz[i][j] == Direccion.NORTE || matriz[i][j] == Direccion.SUR) {
                     if (estaDentroLimite(i - 1, j) && estaDentroLimite(i + 1, j) && matriz[i - 1][j] == matriz[i + 1][j]) {
-                        if (estaDentroLimite(i, j - 1) && matriz[i][j - 1] == '>') {
-                            matriz[i][j] = '8';
+                        if (estaDentroLimite(i, j - 1) && matriz[i][j - 1] == Direccion.ESTE) {
+                            matriz[i][j] = Direccion.SEMAFORO;
                             continue;
                         }
-                        if (estaDentroLimite(i, j + 1) && matriz[i][j + 1] == '<') {
-                            matriz[i][j] = '8';
+                        if (estaDentroLimite(i, j + 1) && matriz[i][j + 1] == Direccion.OESTE) {
+                            matriz[i][j] = Direccion.SEMAFORO;
                             continue;
                         }
                     }
                     //cruce completo
                     if (estaDentroLimite(i - 1, j) && matriz[i - 1][j] == matriz[i][j] && estaDentroLimite(i, j - 1) && estaDentroLimite(i, j + 1)
-                            && (matriz[i][j - 1] == '<' || matriz[i][j - 1] == '>') && (matriz[i][j + 1] == '<' || matriz[i][j + 1] == '>'))
-                        matriz[i][j] = '8';
+                            && (matriz[i][j - 1] == Direccion.OESTE || matriz[i][j - 1] == Direccion.ESTE) && (matriz[i][j + 1] == Direccion.OESTE || matriz[i][j + 1] == Direccion.ESTE))
+                        matriz[i][j] = Direccion.SEMAFORO;
                 }
             }
         }
@@ -292,10 +292,10 @@ public class GeneradorEntornoUrbano {
             return;
 
         visitado[fila][columna] = true;
-        if (matriz[fila][columna] == '0')
+        if (matriz[fila][columna] == Direccion.BLOQUE)
             return;
 
-        matriz[fila][columna] = direccionAnterior.valor();
+        matriz[fila][columna] = direccionAnterior;
 
 
         int filaVecino = fila;
@@ -311,23 +311,23 @@ public class GeneradorEntornoUrbano {
 
 
         // Si el siguiente vecino está fuera del límite, gira la casilla actual
-        if (!estaDentroLimite(filaVecino, columnaVecino) || matriz[filaVecino][columnaVecino] == '0') {
+        if (!estaDentroLimite(filaVecino, columnaVecino) || matriz[filaVecino][columnaVecino] == Direccion.BLOQUE) {
             // cambia de direccion
             if (direccionAnterior.equals(Direccion.ESTE) || direccionAnterior.equals(Direccion.OESTE)) {
                 // Comprueba si hay un bloque al norte o al sur
                 int filaNorte = fila - 1;
                 int filaSur = fila + 1;
-                if (estaDentroLimite(filaNorte, columna) && matriz[filaNorte][columna] != '0') {
-                    matriz[fila][columna] = Direccion.NORTE.valor();
+                if (estaDentroLimite(filaNorte, columna) && matriz[filaNorte][columna] != Direccion.BLOQUE) {
+                    matriz[fila][columna] = Direccion.NORTE;
                     direccionAnterior = Direccion.NORTE;
-                    if (matriz[filaNorte][columna] != '_') {
-                        direccionAnterior = Direccion.getDireccionByValor(matriz[filaNorte][columna]);
+                    if (matriz[filaNorte][columna] != Direccion.TRANSITABLE) {
+                        direccionAnterior = matriz[filaNorte][columna];
                     }
-                } else if (estaDentroLimite(filaSur, columna) && matriz[filaSur][columna] != '0') {
-                    matriz[fila][columna] = Direccion.SUR.valor();
+                } else if (estaDentroLimite(filaSur, columna) && matriz[filaSur][columna] != Direccion.BLOQUE) {
+                    matriz[fila][columna] = Direccion.SUR;
                     direccionAnterior = Direccion.SUR;
-                    if (matriz[filaSur][columna] != '_') {
-                        direccionAnterior = Direccion.getDireccionByValor(matriz[filaSur][columna]);
+                    if (matriz[filaSur][columna] != Direccion.TRANSITABLE) {
+                        direccionAnterior = matriz[filaSur][columna];
                     }
                 }
 
@@ -337,17 +337,17 @@ public class GeneradorEntornoUrbano {
                 // Comprueba si hay un bloque al este o al oeste
                 int columnaOeste = columna - 1;
                 int columnaEste = columna + 1;
-                if (estaDentroLimite(fila, columnaEste) && matriz[fila][columnaEste] != '0') {
-                    matriz[fila][columna] = Direccion.ESTE.valor();
+                if (estaDentroLimite(fila, columnaEste) && matriz[fila][columnaEste] != Direccion.BLOQUE) {
+                    matriz[fila][columna] = Direccion.ESTE;
                     direccionAnterior = Direccion.ESTE;
-                    if (matriz[fila][columnaEste] != '_') {
-                        direccionAnterior = Direccion.getDireccionByValor(matriz[fila][columnaEste]);
+                    if (matriz[fila][columnaEste] != Direccion.TRANSITABLE) {
+                        direccionAnterior = matriz[fila][columnaEste];
                     }
-                } else if (estaDentroLimite(fila, columnaOeste) && matriz[fila][columnaOeste] != '0') {
-                    matriz[fila][columna] = Direccion.OESTE.valor();
+                } else if (estaDentroLimite(fila, columnaOeste) && matriz[fila][columnaOeste] != Direccion.BLOQUE) {
+                    matriz[fila][columna] = Direccion.OESTE;
                     direccionAnterior = Direccion.OESTE;
-                    if (matriz[fila][columnaOeste] != '_') {
-                        direccionAnterior = Direccion.getDireccionByValor(matriz[fila][columnaOeste]);
+                    if (matriz[fila][columnaOeste] != Direccion.TRANSITABLE) {
+                        direccionAnterior = matriz[fila][columnaOeste];
                     }
                 }
             }
@@ -377,7 +377,7 @@ public class GeneradorEntornoUrbano {
      */
     private void recursionDfs(boolean[][] visitado, int fila, int columna, Direccion direccion) {
         try {
-            matriz[fila][columna] = direccion.valor();
+            matriz[fila][columna] = direccion;
             if (direccion.equals(Direccion.ESTE))
                 busquedaEnProfundidad(visitado, fila, columna + 1, direccion);
 
@@ -414,16 +414,16 @@ public class GeneradorEntornoUrbano {
         boolean marcoDerecho = columna == numColumnas - 1;
 
         // Imprime los valores de los vecinos de la celda
-        if (!marcoSuperior && matriz[fila - 1][columna] == '_')  // Si la celda no está en la primera fila, verifica el vecino de arriba
+        if (!marcoSuperior && matriz[fila - 1][columna] == Direccion.TRANSITABLE)  // Si la celda no está en la primera fila, verifica el vecino de arriba
             return Direccion.NORTE;
 
-        if (!marcoInferior && matriz[fila + 1][columna] == '_')  // Si la celda no está en la última fila, verifica el vecino de abajo
+        if (!marcoInferior && matriz[fila + 1][columna] == Direccion.TRANSITABLE)  // Si la celda no está en la última fila, verifica el vecino de abajo
             return Direccion.SUR;
 
-        if (!marcoIzquierdo && matriz[fila][columna - 1] == '_')  // Si la celda no está en la primera columna, verifica el vecino de la izquierda
+        if (!marcoIzquierdo && matriz[fila][columna - 1] == Direccion.TRANSITABLE)  // Si la celda no está en la primera columna, verifica el vecino de la izquierda
             return Direccion.OESTE;
 
-        if (!marcoDerecho && matriz[fila][columna + 1] == '_')  // Si la celda no está en la última columna, verifica el vecino de la derecha
+        if (!marcoDerecho && matriz[fila][columna + 1] == Direccion.TRANSITABLE)  // Si la celda no está en la última columna, verifica el vecino de la derecha
             return Direccion.ESTE;
 
         return null;
@@ -442,7 +442,7 @@ public class GeneradorEntornoUrbano {
         // Buscar colisiones horizontales
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length - 1; j++) {
-                if (matriz[i][j] == '>' && matriz[i][j + 1] == '<') {
+                if (matriz[i][j] == Direccion.ESTE && matriz[i][j + 1] == Direccion.OESTE) {
                     colisionesHorizontales.add(new Pair<>(i, new Point(j, j + 1)));
                     System.out.println("Colisión horizontal en la fila " + (i + 1) + ", entre las columnas " + (j + 1) + " y " + (j + 2));
                 }
@@ -463,7 +463,7 @@ public class GeneradorEntornoUrbano {
         // Buscar colisiones verticales
         for (int i = 0; i < matriz.length - 1; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
-                if (matriz[i][j] == 'v' && matriz[i + 1][j] == '^') {
+                if (matriz[i][j] == Direccion.SUR && matriz[i + 1][j] == Direccion.NORTE) {
                     colisionesVerticales.add(new Pair<>(j, new Point(i, i + 1)));
                     System.out.println("Colisión vertical en la columna " + (j + 1) + ", entre las filas " + (i + 1) + " y " + (i + 2));
                 }
@@ -505,7 +505,7 @@ public class GeneradorEntornoUrbano {
      * @return
      */
     private boolean celdaLibre(int fila, int columna) {
-        return estaDentroLimite(fila, columna) && matriz[fila][columna] == '_';
+        return estaDentroLimite(fila, columna) && matriz[fila][columna] == Direccion.TRANSITABLE;
     }
 
 
@@ -528,7 +528,7 @@ public class GeneradorEntornoUrbano {
         StringBuilder ret = new StringBuilder();
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                ret.append(matriz[i][j]).append(" ");
+                ret.append(matriz[i][j].valor()).append(" ");
             }
             ret.append("\n");
         }
