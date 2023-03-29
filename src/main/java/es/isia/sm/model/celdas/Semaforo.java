@@ -5,15 +5,13 @@ import es.isia.sm.model.coordenadas.Direccion;
 
 public class Semaforo extends CeldaTransitable {
 
-    public Semaforo(Coordenada coordenada, Direccion direction) {
-        super(coordenada, direction);
-    }
+    private static final long serialVersionUID = 6500957949937663625L;
 
     public Semaforo(Coordenada position) {
-        this(position, Direccion.generarDireccionAleatoria());
+        super(position, Direccion.generarDireccionAleatoria());
     }
 
-    public void setAllowDirection(Direccion direction) {
+    public void direccionPermitida(Direccion direction) {
         direccion = direction;
     }
 

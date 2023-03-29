@@ -1,12 +1,16 @@
 package es.isia.sm.model.coordenadas;
 
-import java.beans.Transient;
+import java.io.Serializable;
+import java.util.Objects;
 
-public class Coordenada implements java.io.Serializable {
+public class Coordenada implements Serializable {
+
+
+    private static final long serialVersionUID = -9023559829650531111L;
+
     /**
      * The X coordinate of this <code>Point</code>.
      * If no X coordinate is set it will default to 0.
-     *
      *
      * @see #move(int, int)
      * @since 1.0
@@ -144,16 +148,12 @@ public class Coordenada implements java.io.Serializable {
         this.y += dy;
     }
 
-    /**
-     * Determines whether or not two points are equal. Two instances of
-     * <code>Point2D</code> are equal if the values of their
-     * <code>x</code> and <code>y</code> member fields, representing
-     * their position in the coordinate space, are the same.
-     * @param obj an object to be compared with this <code>Point2D</code>
-     * @return <code>true</code> if the object to be compared is
-     *         an instance of <code>Point2D</code> and has
-     *         the same values; <code>false</code> otherwise.
-     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Coordenada) {
             Coordenada pt = (Coordenada)obj;

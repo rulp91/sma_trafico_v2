@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public abstract class Celda implements Serializable {
+    private static final long serialVersionUID = 1572468285725371240L;
     private final Coordenada coordenadas;
 
     public Celda(Coordenada coordenadas) {

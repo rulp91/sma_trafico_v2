@@ -1,5 +1,6 @@
 package es.isia.sm.model.coordenadas;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Random;
  * Las direcciones posibles son NORTE, SUR, ESTE, OESTE, SEMAFORO y BLOQUE.
  * SEMAFORO representa un cruce con semáforo y BLOQUE representa un bloque en el mapa.
  */
-public enum Direccion {
+public enum Direccion implements Serializable {
     NORTE('^'),
     ESTE('>'),
     SUR('v'),
@@ -58,7 +59,7 @@ public enum Direccion {
 
     /**
      * Genera una dirección de forma aleatoria
-     * @return
+     * @return una dirección de forma aleatoria
      */
     public static Direccion generarDireccionAleatoria() {
         Random random = new Random();
@@ -77,4 +78,6 @@ public enum Direccion {
                 throw new IllegalStateException("Número aleatorio fuera de rango");
         }
     }
+
+
 }
