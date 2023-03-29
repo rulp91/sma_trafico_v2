@@ -12,7 +12,6 @@ public enum Direccion {
     OESTE('<'),
     SEMAFORO('8'),
     BLOQUE('0'),
-
     TRANSITABLE('_');
 
     private char caracter;

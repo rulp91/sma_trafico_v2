@@ -13,7 +13,7 @@ public class Semaforo extends CeldaTransitable {
      * @param direction
      */
     public void setAllowDirection(Direccion direction) {
-        currentDirection = direction;
+        direccion = direction;
     }
 
     @Override

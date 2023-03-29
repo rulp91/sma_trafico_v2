@@ -16,6 +16,6 @@ public class Bloque extends Celda {
 
     @Override
     public String toString() {
-        return "0";
+        return String.valueOf(Direccion.BLOQUE);
     }
 }

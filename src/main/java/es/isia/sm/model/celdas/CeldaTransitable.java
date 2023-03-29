@@ -4,12 +4,12 @@ import java.awt.*;
 
 public abstract class CeldaTransitable extends Celda {
 
-    protected Direccion currentDirection;
+    protected Direccion direccion;
 
 
     protected CeldaTransitable(Point position, Direccion direction) {
         super(position);
-        currentDirection = direction;
+        direccion = direction;
     }
 
     @Override
@@ -17,12 +17,12 @@ public abstract class CeldaTransitable extends Celda {
         return true;
     }
 
-    public Direccion getCurrentDirection() {
-        return currentDirection;
+    public Direccion getDireccion() {
+        return direccion;
     }
 
     @Override
     public String toString() {
-        return String.valueOf(currentDirection.valor());
+        return String.valueOf(direccion.valor());
     }
 }
