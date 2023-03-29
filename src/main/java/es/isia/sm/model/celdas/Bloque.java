@@ -1,11 +1,13 @@
 package es.isia.sm.model.celdas;
 
 
-import java.awt.*;
+import es.isia.sm.model.coordenadas.Coordenada;
+import es.isia.sm.model.coordenadas.Direccion;
+
 
 public class Bloque extends Celda {
 
-    public Bloque(Point position) {
+    public Bloque(Coordenada position) {
         super(position);
     }
 

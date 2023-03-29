@@ -1,11 +1,12 @@
 package es.isia.sm.model.celdas;
 
-import java.awt.*;
+import es.isia.sm.model.coordenadas.Coordenada;
+import es.isia.sm.model.coordenadas.Direccion;
 
 public class CeldaDireccionUnica extends CeldaTransitable {
 
 
-    public CeldaDireccionUnica(Point position, Direccion direction) {
-        super(position, direction);
+    public CeldaDireccionUnica(Coordenada coordenada, Direccion direction) {
+        super(coordenada, direction);
     }
 }

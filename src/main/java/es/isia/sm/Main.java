@@ -1,10 +1,6 @@
 package es.isia.sm;
 
 import es.isia.sm.helper.GeneradorEntornoUrbano;
-import javafx.util.Pair;
-
-import java.awt.*;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {

@@ -1,4 +1,6 @@
-package es.isia.sm.model.celdas;
+package es.isia.sm.model.coordenadas;
+
+import java.util.Random;
 
 /**
  * Enumerado que representa las diferentes direcciones posibles en un mapa.
@@ -52,5 +54,27 @@ public enum Direccion {
 
     public char valor() {
         return caracter;
+    }
+
+    /**
+     * Genera una dirección de forma aleatoria
+     * @return
+     */
+    public static Direccion generarDireccionAleatoria() {
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(4); // Genera un número aleatorio entre 0 y 3
+
+        switch (numeroAleatorio) {
+            case 0:
+                return Direccion.NORTE;
+            case 1:
+                return Direccion.ESTE;
+            case 2:
+                return Direccion.SUR;
+            case 3:
+                return Direccion.OESTE;
+            default:
+                throw new IllegalStateException("Número aleatorio fuera de rango");
+        }
     }
 }

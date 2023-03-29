@@ -1,9 +1,12 @@
 package es.isia.sm.helper;
 
-import es.isia.sm.model.celdas.Direccion;
-import javafx.util.Pair;
+import es.isia.sm.model.celdas.Bloque;
+import es.isia.sm.model.celdas.Celda;
+import es.isia.sm.model.coordenadas.Coordenada;
+import es.isia.sm.model.coordenadas.Direccion;
+import es.isia.sm.model.celdas.Semaforo;
+import es.isia.sm.model.utils.Par;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -11,8 +14,8 @@ import java.util.Random;
 public class GeneradorEntornoUrbano {
 
     private Direccion[][] matriz;
-    private int filas;
-    private int columnas;
+    private final int filas;
+    private final int columnas;
     private Random random = new Random();
 
     public GeneradorEntornoUrbano(int filas, int columnas) {
@@ -27,9 +30,37 @@ public class GeneradorEntornoUrbano {
         }
     }
 
+    /**
+     * Retorna una matriz de direcciones
+     * @return
+     */
     public Direccion[][] getMatriz() {
         return matriz;
     }
+
+    /**
+     * Retorna una matriz de celdas
+     * @return
+     */
+    public Celda[][] generarEntornoUrbano() {
+        Celda[][] entorno = new Celda[filas][columnas];
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                switch (matriz[i][j]){
+                    case BLOQUE:
+                        entorno[i][j] = new Bloque(new Coordenada(i,j));
+                        break;
+                    case SEMAFORO:
+                        entorno[i][j] = new Semaforo(new Coordenada(i,j));
+                }
+                //entorno[i][j] = new
+            }
+        }
+
+        return entorno;
+    }
+
 
     /**
      * Genera un número específico de casillas no transitables en la matriz.
@@ -72,15 +103,16 @@ public class GeneradorEntornoUrbano {
     /**
      * Método que repara las colisiones horizontales de los objetos en la matriz.
      * Recorre la matriz buscando las colisiones horizontales y realiza las reparaciones correspondientes.
-     * Si la colisión se resuelve moviendo el objeto hacia arriba o hacia abajo, se utiliza el carácter Direccion.NORTE o Direccion.SUR, respectivamente.
+     * Si la colisión se resuelve moviendo el objeto hacia arriba o hacia abajo, se utiliza el carácter
+     * Direccion.NORTE o Direccion.SUR, respectivamente.
      *
      * @see GeneradorEntornoUrbano buscarColisionesHorizontales()
      * @see GeneradorEntornoUrbano estaDentroLimite(int, int)
      */
     public void reparaColisionesHorizontales() {
-        for (Pair<Integer, Point> colision : buscarColisionesHorizontales()) {
-            int fila = colision.getKey();
-            Point puntoColision = colision.getValue();
+        for (Par<Integer, Coordenada> colision : buscarColisionesHorizontales()) {
+            int fila = colision.getClave();
+            Coordenada puntoColision = colision.getValor();
             int distanciaBloqueX = 0;
             int distanciaBloqueY = 0;
 
@@ -127,9 +159,9 @@ public class GeneradorEntornoUrbano {
      * @see GeneradorEntornoUrbano estaDentroLimite(int, int)
      */
     public void reparaColisionesVerticales() {
-        for (Pair<Integer, Point> colision : buscarColisionesVerticales()) {
-            int columna = colision.getKey();
-            Point puntoColision = colision.getValue();
+        for (Par<Integer, Coordenada> colision : buscarColisionesVerticales()) {
+            int columna = colision.getClave();
+            Coordenada puntoColision = colision.getValor();
 
             //asignar semaforos
             if (estaDentroLimite(puntoColision.x - 1, columna) && estaDentroLimite(puntoColision.x + 1, columna) &&
@@ -437,13 +469,13 @@ public class GeneradorEntornoUrbano {
      *
      * @return una lista de pares (fila, punto de colisión) que representan las colisiones horizontales encontradas.
      */
-    private List<Pair<Integer, Point>> buscarColisionesHorizontales() {
-        java.util.List<Pair<Integer, Point>> colisionesHorizontales = new ArrayList<>();
+    private List<Par<Integer, Coordenada>> buscarColisionesHorizontales() {
+        List<Par<Integer, Coordenada>> colisionesHorizontales = new ArrayList<>();
         // Buscar colisiones horizontales
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length - 1; j++) {
                 if (matriz[i][j] == Direccion.ESTE && matriz[i][j + 1] == Direccion.OESTE) {
-                    colisionesHorizontales.add(new Pair<>(i, new Point(j, j + 1)));
+                    colisionesHorizontales.add(new Par<>(i, new Coordenada(j, j + 1)));
                     System.out.println("Colisión horizontal en la fila " + (i + 1) + ", entre las columnas " + (j + 1) + " y " + (j + 2));
                 }
             }
@@ -458,13 +490,13 @@ public class GeneradorEntornoUrbano {
      *
      * @return una lista de pares (columna, punto de colisión) que representan las colisiones verticales encontradas.
      */
-    private List<Pair<Integer, Point>> buscarColisionesVerticales() {
-        List<Pair<Integer, Point>> colisionesVerticales = new ArrayList<>();
+    private List<Par<Integer, Coordenada>> buscarColisionesVerticales() {
+        List<Par<Integer, Coordenada>> colisionesVerticales = new ArrayList<>();
         // Buscar colisiones verticales
         for (int i = 0; i < matriz.length - 1; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
                 if (matriz[i][j] == Direccion.SUR && matriz[i + 1][j] == Direccion.NORTE) {
-                    colisionesVerticales.add(new Pair<>(j, new Point(i, i + 1)));
+                    colisionesVerticales.add(new Par<>(j, new Coordenada(i, i + 1)));
                     System.out.println("Colisión vertical en la columna " + (j + 1) + ", entre las filas " + (i + 1) + " y " + (i + 2));
                 }
             }
