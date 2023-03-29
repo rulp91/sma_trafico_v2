@@ -13,10 +13,10 @@ import java.util.Random;
 
 public class GeneradorEntornoUrbano {
 
-    private Direccion[][] matriz;
+    private final Direccion[][] matriz;
     private final int filas;
     private final int columnas;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public GeneradorEntornoUrbano(int filas, int columnas) {
         this.filas = filas;

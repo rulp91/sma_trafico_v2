@@ -16,7 +16,7 @@ public enum Direccion {
     BLOQUE('0'),
     TRANSITABLE('_');
 
-    private char caracter;
+    private final char caracter;
 
     /**
      * Constructor de la enumeración Direccion.
