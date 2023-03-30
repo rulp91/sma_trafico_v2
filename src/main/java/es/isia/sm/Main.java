@@ -1,6 +1,8 @@
 package es.isia.sm;
 
 import es.isia.sm.helper.GeneradorEntornoUrbano;
+import es.isia.sm.model.celdas.Celda;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -16,7 +18,7 @@ public class Main {
         entornoUrbano.colocarSemaforosHorizontal();
         entornoUrbano.colocarSemaforosVertical();
         System.out.println(entornoUrbano);
-
+        Celda[][] entorno = entornoUrbano.generarEntornoUrbano();
 //        //TODO :: volver a revisar colisiones horizontales y aplicar corrección
 //        // si aun existen colisiones, coloca semaforos
 //        colisionesHorizontales = entornoUrbano.buscarColisionesHorizontales();

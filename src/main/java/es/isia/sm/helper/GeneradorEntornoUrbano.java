@@ -2,6 +2,7 @@ package es.isia.sm.helper;
 
 import es.isia.sm.model.celdas.Bloque;
 import es.isia.sm.model.celdas.Celda;
+import es.isia.sm.model.celdas.CeldaDireccionUnica;
 import es.isia.sm.model.coordenadas.Coordenada;
 import es.isia.sm.model.coordenadas.Direccion;
 import es.isia.sm.model.celdas.Semaforo;
@@ -53,8 +54,17 @@ public class GeneradorEntornoUrbano {
                         break;
                     case SEMAFORO:
                         entorno[i][j] = new Semaforo(new Coordenada(i,j));
+                        break;
+                    case ESTE:
+                    case OESTE:
+                    case NORTE:
+                    case SUR:
+                        entorno[i][j] = new CeldaDireccionUnica(new Coordenada(i,j), matriz[i][j]);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("El valor " + matriz[i][j] + " no corresponde a ninguna dirección conocida.");
                 }
-                //entorno[i][j] = new
+
             }
         }
 
