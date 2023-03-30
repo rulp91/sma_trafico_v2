@@ -1,7 +1,7 @@
-package es.isia.sm.controller;
+package es.uma.isia.sma.controller;
 
-import es.isia.sm.controller.behaviour.ComportamientoCoche;
-import es.isia.sm.model.celdas.CeldaTransitable;
+import es.uma.isia.sma.controller.behaviour.ComportamientoCoche;
+import es.uma.isia.sma.model.celdas.CeldaTransitable;
 import jade.core.AID;
 import jade.core.Agent;
 

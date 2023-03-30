@@ -1,6 +1,6 @@
-package es.isia.sm.controller.behaviour;
+package es.uma.isia.sma.controller.behaviour;
 
-import es.isia.sm.controller.AgenteSemaforo;
+import es.uma.isia.sma.controller.AgenteSemaforo;
 import jade.core.behaviours.WakerBehaviour;
 import jade.lang.acl.ACLMessage;
 

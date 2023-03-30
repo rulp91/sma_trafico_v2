@@ -1,8 +1,8 @@
-package es.isia.sm.model.celdas;
+package es.uma.isia.sma.model.celdas;
 
 
-import es.isia.sm.model.coordenadas.Coordenada;
-import es.isia.sm.model.coordenadas.Direccion;
+import es.uma.isia.sma.model.coordenadas.Coordenada;
+import es.uma.isia.sma.model.coordenadas.Direccion;
 
 
 public class Bloque extends Celda {

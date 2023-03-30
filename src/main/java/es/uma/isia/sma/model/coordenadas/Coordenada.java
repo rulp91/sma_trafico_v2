@@ -1,4 +1,4 @@
-package es.isia.sm.model.coordenadas;
+package es.uma.isia.sma.model.coordenadas;
 
 import java.io.Serializable;
 import java.util.Objects;

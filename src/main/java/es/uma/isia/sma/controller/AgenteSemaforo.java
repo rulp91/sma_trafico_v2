@@ -1,8 +1,8 @@
-package es.isia.sm.controller;
+package es.uma.isia.sma.controller;
 
-import es.isia.sm.controller.behaviour.ComportamientoSemaforo;
-import es.isia.sm.model.celdas.Semaforo;
-import es.isia.sm.model.coordenadas.Direccion;
+import es.uma.isia.sma.controller.behaviour.ComportamientoSemaforo;
+import es.uma.isia.sma.model.celdas.Semaforo;
+import es.uma.isia.sma.model.coordenadas.Direccion;
 import jade.core.AID;
 import jade.core.Agent;
 

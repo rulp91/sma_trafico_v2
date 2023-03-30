@@ -1,6 +1,6 @@
-package es.isia.sm.model.celdas;
+package es.uma.isia.sma.model.celdas;
 
-import es.isia.sm.model.coordenadas.Coordenada;
+import es.uma.isia.sma.model.coordenadas.Coordenada;
 
 import java.io.Serializable;
 import java.util.Objects;

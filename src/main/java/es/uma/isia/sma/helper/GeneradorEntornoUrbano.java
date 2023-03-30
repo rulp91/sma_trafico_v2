@@ -1,12 +1,12 @@
-package es.isia.sm.helper;
+package es.uma.isia.sma.helper;
 
-import es.isia.sm.model.celdas.Bloque;
-import es.isia.sm.model.celdas.Celda;
-import es.isia.sm.model.celdas.CeldaDireccionUnica;
-import es.isia.sm.model.coordenadas.Coordenada;
-import es.isia.sm.model.coordenadas.Direccion;
-import es.isia.sm.model.celdas.Semaforo;
-import es.isia.sm.model.utils.Par;
+import es.uma.isia.sma.model.celdas.Bloque;
+import es.uma.isia.sma.model.celdas.Celda;
+import es.uma.isia.sma.model.celdas.CeldaDireccionUnica;
+import es.uma.isia.sma.model.coordenadas.Coordenada;
+import es.uma.isia.sma.model.coordenadas.Direccion;
+import es.uma.isia.sma.model.celdas.Semaforo;
+import es.uma.isia.sma.model.utils.Par;
 
 import java.util.ArrayList;
 import java.util.List;

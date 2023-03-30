@@ -1,7 +1,7 @@
-package es.isia.sm;
+package es.uma.isia.sma;
 
-import es.isia.sm.helper.GeneradorEntornoUrbano;
-import es.isia.sm.model.celdas.Celda;
+import es.uma.isia.sma.helper.GeneradorEntornoUrbano;
+import es.uma.isia.sma.model.celdas.Celda;
 
 
 public class Main {
