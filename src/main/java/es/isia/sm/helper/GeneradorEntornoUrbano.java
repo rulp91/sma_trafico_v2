@@ -30,7 +30,17 @@ public class GeneradorEntornoUrbano {
             }
         }
     }
-
+    public  static Celda[][] generarMockup(){
+        GeneradorEntornoUrbano entornoUrbano = new GeneradorEntornoUrbano(10, 20);
+        entornoUrbano.generarCasillasNoTransitables(40);
+        entornoUrbano.asignarDirecciones();
+        entornoUrbano.reparaColisionesHorizontales();
+        entornoUrbano.reparaColisionesVerticales();
+        entornoUrbano.colocarSemaforosHorizontal();
+        entornoUrbano.colocarSemaforosVertical();
+        System.out.println(entornoUrbano);
+        return entornoUrbano.generarEntornoUrbano();
+    }
     /**
      * Retorna una matriz de direcciones
      * @return
