@@ -1,6 +1,9 @@
 package es.uma.isia.sma.controller;
 
 import es.uma.isia.sma.controller.behaviour.ComportamientoSimulacionEntorno;
+import es.uma.isia.sma.helper.GeneradorEntornoUrbano;
+import es.uma.isia.sma.model.celdas.Celda;
+import es.uma.isia.sma.model.celdas.Semaforo;
 import jade.core.Agent;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
@@ -18,6 +21,8 @@ public class AgenteSimuladorEntorno extends Agent {
     private float porcentajeCeldasNoTransitables;
     private float porcentajeVehiculos;
     private int segundosEsperaNoTransitable;
+
+    private Celda[][] entornoUrbano;
     private List<AgentController> listadoControladoresCoches;
     private List<AgentController> listadoControladoresSemaforos;
     private AgentController controladorTrafico;
@@ -57,21 +62,32 @@ public class AgenteSimuladorEntorno extends Agent {
 //            throw new RuntimeException(e);
 //        }
     }
+    public void inicilizarSemaforos() {
+        ContainerController c = getContainerController();
+        for(int i= 0; i  < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                if(entornoUrbano[i][j] instanceof Semaforo) {
+                    try {
+                        Semaforo semaforo = (Semaforo) entornoUrbano[i][j];
+                        String nickname = "semaforo_" + semaforo.getCoordenadas().x + "_" + semaforo.getCoordenadas().y;
+                        c.createNewAgent(nickname, "es.uma.isia.sma.agents.TrafficLightAgent", new Object[]{semaforo});
+                        AgentController agentController = c.getAgent(nickname);
+                        agentController.start();
+                        listadoControladoresSemaforos.add(agentController);
+                    } catch (StaleProxyException e) {
+                        throw new RuntimeException(e);
+                    } catch (ControllerException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+    }
 
-//    public void addTrafficLightAgent(CrossCell trafficLightCell){
-////        ContainerController c = getContainerController();
-////        try {
-////            String nickname = "semaforo_"+ trafficLightCell.getMatrixPosition().hashCode();
-////            c.createNewAgent(nickname, "es.uma.isia.sma.agents.TrafficLightAgent", new Object[]{ trafficLightCell});
-////            AgentController agentController = c.getAgent(nickname);
-////            agentController.start();
-////            trafficLigthAgents.add(agentController);
-////        } catch (StaleProxyException e) {
-////            throw new RuntimeException(e);
-////        } catch (ControllerException e) {
-////            throw new RuntimeException(e);
-////        }
-//    }
+    public void crearControlTrafico() {
+        entornoUrbano = GeneradorEntornoUrbano.generarMockup();
+        // TODO: 30/03/2023 incicializar control de tráfico
+    }
 
     @Override
     public void doDelete() {
@@ -93,4 +109,6 @@ public class AgenteSimuladorEntorno extends Agent {
 
         super.doDelete();
     }
+
+
 }

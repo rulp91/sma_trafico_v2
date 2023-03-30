@@ -1,6 +1,7 @@
 package es.uma.isia.sma.controller.behaviour;
 
 import es.uma.isia.sma.controller.AgenteSimuladorEntorno;
+import es.uma.isia.sma.helper.GeneradorEntornoUrbano;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.TickerBehaviour;
 
@@ -10,9 +11,11 @@ public class ComportamientoSimulacionEntorno extends Behaviour {
 
     private final AgenteSimuladorEntorno simuladorEntorno;
 
+
     public ComportamientoSimulacionEntorno(AgenteSimuladorEntorno a) {
         super(a);
         simuladorEntorno = a;
+
        // timeout = 7 + a.getNumeroSegundosSimulacion();
 
     }
@@ -37,14 +40,12 @@ public class ComportamientoSimulacionEntorno extends Behaviour {
                 break;
             case 4:
                 System.out.println("Paso 4: agente control de tráfico");
-
+                simuladorEntorno.crearControlTrafico();
                 pasos++;
                 break;
             case 5:
                 System.out.println("Paso 5: crea el scheduler de los semáforos");
-//                for (CrossCell trafficLight: ViewTraficController.getInstance().getTrafficLightsCellList()) {
-//                    ((SceneAgent) myAgent).addTrafficLightAgent(trafficLight);
-//                }
+                simuladorEntorno.inicilizarSemaforos();
                 pasos++;
                 break;
             case 6:
