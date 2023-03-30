@@ -48,19 +48,19 @@ public class AgenteSimuladorEntorno extends Agent {
     }
 
     public void addCarAgent(String name){
-//        ContainerController c = getContainerController();
-//        try {
-//            //Pasamos la celda inicial
-////            PassableCell initCell = (PassableCell) matrix.getCell(matrix.getMatrixIntroPosition());
-////            c.createNewAgent(name, "es.uma.isia.sma.agents.CarAgent", new Object[]{ initCell, getAID()});
-////            AgentController agentController = c.getAgent(name);
-////            agentController.start();
-////            listadoControladoresCoches.add(agentController);
-//        } catch (StaleProxyException e) {
-//            throw new RuntimeException(e);
-//        } catch (ControllerException e) {
-//            throw new RuntimeException(e);
-//        }
+        ContainerController c = getContainerController();
+        try {
+            //Pasamos la celda inicial
+//            PassableCell initCell = (PassableCell) matrix.getCell(matrix.getMatrixIntroPosition());
+            c.createNewAgent(name, "es.uma.isia.sma.controller.AgenteCoche", new Object[]{ getAID()});
+            AgentController agentController = c.getAgent(name);
+            agentController.start();
+            listadoControladoresCoches.add(agentController);
+        } catch (StaleProxyException e) {
+            throw new RuntimeException(e);
+        } catch (ControllerException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void inicilizarSemaforos() {
         ContainerController c = getContainerController();
@@ -70,7 +70,7 @@ public class AgenteSimuladorEntorno extends Agent {
                     try {
                         Semaforo semaforo = (Semaforo) entornoUrbano[i][j];
                         String nickname = "semaforo_" + semaforo.getCoordenadas().x + "_" + semaforo.getCoordenadas().y;
-                        c.createNewAgent(nickname, "es.uma.isia.sma.agents.TrafficLightAgent", new Object[]{semaforo});
+                        c.createNewAgent(nickname, "es.uma.isia.sma.controller.AgenteSemaforo", new Object[]{semaforo});
                         AgentController agentController = c.getAgent(nickname);
                         agentController.start();
                         listadoControladoresSemaforos.add(agentController);
@@ -87,28 +87,48 @@ public class AgenteSimuladorEntorno extends Agent {
     public void crearControlTrafico() {
         entornoUrbano = GeneradorEntornoUrbano.generarMockup();
         // TODO: 30/03/2023 incicializar control de tráfico
+        ContainerController c = getContainerController();
+        try {
+            c.createNewAgent("control_trafico", "es.uma.isia.sma.controller.AgenteControlTrafico", null);
+            controladorTrafico = c.getAgent("control_trafico");
+            controladorTrafico.start();
+        } catch (StaleProxyException e) {
+            throw new RuntimeException(e);
+        } catch (ControllerException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
     public void doDelete() {
-//        for (AgentController agent: carAgents) {
-//            try {
-//                agent.kill();
-//            } catch (StaleProxyException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//
-//        for (AgentController agent: trafficLigthAgents) {
-//            try {
-//                agent.kill();
-//            } catch (StaleProxyException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
+        try {
+            controladorTrafico.kill();
+        } catch (StaleProxyException e) {
+            throw new RuntimeException(e);
+        }
+        for (AgentController agent: listadoControladoresSemaforos) {
+            try {
+                agent.kill();
+            } catch (StaleProxyException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        for (AgentController agent: listadoControladoresCoches) {
+            try {
+                agent.kill();
+            } catch (StaleProxyException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         super.doDelete();
     }
 
 
+    public int getNumeroVehiculosACrear(){
+        //return (int) (filas * columnas * porcentajeVehiculos);
+        return 10;
+    }
 }

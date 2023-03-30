@@ -50,7 +50,7 @@ public class ComportamientoSimulacionEntorno extends Behaviour {
                 break;
             case 6:
                 System.out.println("Paso 6: crea el scheduler de los coches");
-//                myAgent.addBehaviour(new InitCarBehaviour(agent, agent.getNumeroVehiculosACrear()));
+                simuladorEntorno.addBehaviour(new ComportamientoSecuenciaEntradaCoches(simuladorEntorno, simuladorEntorno.getNumeroVehiculosACrear()));
                 pasos++;
                 break;
             case 7:
