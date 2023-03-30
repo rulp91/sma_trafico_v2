@@ -50,6 +50,7 @@ public class AgenteSimuladorEntorno extends Agent {
     public void addCarAgent(String name){
         ContainerController c = getContainerController();
         try {
+            // TODO: 30/03/2023 quitar AID y pasar como localname
             //Pasamos la celda inicial
 //            PassableCell initCell = (PassableCell) matrix.getCell(matrix.getMatrixIntroPosition());
             c.createNewAgent(name, "es.uma.isia.sma.controller.AgenteCoche", new Object[]{ getAID()});
@@ -70,7 +71,7 @@ public class AgenteSimuladorEntorno extends Agent {
                     try {
                         Semaforo semaforo = (Semaforo) entornoUrbano[i][j];
                         String nickname = "semaforo_" + semaforo.getCoordenadas().x + "_" + semaforo.getCoordenadas().y;
-                        c.createNewAgent(nickname, "es.uma.isia.sma.controller.AgenteSemaforo", new Object[]{semaforo});
+                        c.createNewAgent(nickname, "es.uma.isia.sma.controller.AgenteSemaforo", new Object[]{semaforo, getAID()});
                         AgentController agentController = c.getAgent(nickname);
                         agentController.start();
                         listadoControladoresSemaforos.add(agentController);
