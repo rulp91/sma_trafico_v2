@@ -16,7 +16,7 @@ public class ComportamientoSimulacionEntorno extends Behaviour {
         super(a);
         simuladorEntorno = a;
 
-       // timeout = 7 + a.getNumeroSegundosSimulacion();
+        timeout = 7 + a.getTimeoutSimulacion();
 
     }
 

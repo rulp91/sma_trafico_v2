@@ -17,7 +17,7 @@ public class AgenteSimuladorEntorno extends Agent {
 
     private int filas;
     private int columnas;
-    private int numeroSegundosSimulacion;
+    private int timeoutSimulacion;
     private float porcentajeCeldasNoTransitables;
     private float porcentajeVehiculos;
     private int segundosEsperaNoTransitable;
@@ -36,7 +36,7 @@ public class AgenteSimuladorEntorno extends Agent {
 
         filas = Integer.parseInt((String) args[0]);
         columnas = Integer.parseInt((String) args[1]);
-        numeroSegundosSimulacion = Integer.parseInt((String) args[2]);
+        timeoutSimulacion = Integer.parseInt((String) args[2]);
         porcentajeCeldasNoTransitables = Float.parseFloat((String) args[3]);
         porcentajeVehiculos = Float.parseFloat((String) args[4]);
         segundosEsperaNoTransitable = Integer.parseInt((String) args[5]);
@@ -130,5 +130,9 @@ public class AgenteSimuladorEntorno extends Agent {
     public int getNumeroVehiculosACrear(){
         //return (int) (filas * columnas * porcentajeVehiculos);
         return 10;
+    }
+
+    public int getTimeoutSimulacion() {
+        return timeoutSimulacion;
     }
 }
