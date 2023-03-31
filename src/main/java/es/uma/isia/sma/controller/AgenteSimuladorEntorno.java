@@ -9,6 +9,7 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
+import javafx.scene.control.Cell;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +23,6 @@ public class AgenteSimuladorEntorno extends Agent {
     private float porcentajeVehiculos;
     private int segundosEsperaNoTransitable;
 
-    private Celda[][] entornoUrbano;
     private List<AgentController> listadoControladoresCoches;
     private List<AgentController> listadoControladoresSemaforos;
     private AgentController controladorTrafico;
@@ -65,6 +65,7 @@ public class AgenteSimuladorEntorno extends Agent {
     }
     public void inicilizarSemaforos() {
         ContainerController c = getContainerController();
+        Celda[][] entornoUrbano = EntornoUrbanoSingleton.getInstance().getEntornoUrbano();
         for(int i= 0; i  < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 if(entornoUrbano[i][j] instanceof Semaforo) {
@@ -86,7 +87,7 @@ public class AgenteSimuladorEntorno extends Agent {
     }
 
     public void crearControlTrafico() {
-        entornoUrbano = GeneradorEntornoUrbano.generarMockup();
+        EntornoUrbanoSingleton.getInstance();
         ContainerController c = getContainerController();
         try {
             c.createNewAgent("agente-control-trafico", "es.uma.isia.sma.controller.AgenteControlTrafico", null);
