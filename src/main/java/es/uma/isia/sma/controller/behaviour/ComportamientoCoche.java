@@ -46,47 +46,49 @@ public class ComportamientoCoche extends TickerBehaviour {
      * si la respuesta es negativa, el agente Coche no avanza.
      */
     protected void onTick() {
-        ACLMessage mensage = new ACLMessage(ACLMessage.REQUEST);
+
 
         // Establecer destinatario del mensaje (Agente Scene)
-        AID destinatario = new AID(coche.getSceneAgentAID().getLocalName(), AID.ISLOCALNAME);
-        mensage.addReceiver(destinatario);
+        AID destinatario = coche.getAIDAgenteControlTrafico();
+        if(destinatario!=null) {
+            ACLMessage mensage = new ACLMessage(ACLMessage.REQUEST);
+            mensage.addReceiver(destinatario);
+            // Establecer contenido del mensaje
+            try {
 
-        // Establecer contenido del mensaje
-        try {
+                mensage.setContent("AvanceCoche");
+                mensage.setContentObject(coche.getCeldaActual());
 
-            mensage.setContent("AvanceCoche");
-            mensage.setContentObject(coche.getCeldaActual());
+                // Establecer el protocolo FIPA-Request
+                mensage.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 
-            // Establecer el protocolo FIPA-Request
-            mensage.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+                // Establecer la codificación del mensaje
+                mensage.setLanguage("Java");
+                mensage.setOntology("Ontologia de Coches");
 
-            // Establecer la codificación del mensaje
-            mensage.setLanguage("Java");
-            mensage.setOntology("Ontologia de Coches");
+                // Enviar mensaje
+                coche.send(mensage);
 
-            // Enviar mensaje
-            coche.send(mensage);
-
-            // Esperar respuesta
-            ACLMessage respuesta = coche.blockingReceive();
-            if (respuesta != null) {
-                if (respuesta.getPerformative() == ACLMessage.AGREE) {
-                    //System.out.println("El agente Scene ha aceptado la petición.");
-                    CeldaTransitable siguienteCelda = (CeldaTransitable) respuesta.getContentObject();
-                    coche.avance(siguienteCelda);
-                } else if (respuesta.getPerformative() == ACLMessage.REFUSE) {
-                    //System.out.println("El agente Scene ha rechazado la petición.");
+                // Esperar respuesta
+                ACLMessage respuesta = coche.blockingReceive();
+                if (respuesta != null) {
+                    if (respuesta.getPerformative() == ACLMessage.AGREE) {
+                        //System.out.println("El agente Scene ha aceptado la petición.");
+                        CeldaTransitable siguienteCelda = (CeldaTransitable) respuesta.getContentObject();
+                        coche.avance(siguienteCelda);
+                    } else if (respuesta.getPerformative() == ACLMessage.REFUSE) {
+                        //System.out.println("El agente Scene ha rechazado la petición.");
+                    } else {
+                        //System.out.println("El agente Scene ha respondido con un mensaje no esperado.");
+                    }
                 } else {
-                    //System.out.println("El agente Scene ha respondido con un mensaje no esperado.");
+                    block();
                 }
-            } else {
-                block();
+            } catch (IOException e) {
+                System.err.println(getClass() + " " + e.getMessage());
+            } catch (UnreadableException e) {
+                System.err.println(getClass() + " " + e.getMessage());
             }
-        } catch (IOException e) {
-            System.err.println(getClass() + " " + e.getMessage());
-        } catch (UnreadableException e) {
-            System.err.println(getClass() + " " + e.getMessage());
         }
     }
 }

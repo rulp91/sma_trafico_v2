@@ -1,6 +1,7 @@
 package es.uma.isia.sma.controller.behaviour;
 
 import es.uma.isia.sma.controller.AgenteSemaforo;
+import jade.core.AID;
 import jade.core.behaviours.WakerBehaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -52,15 +53,17 @@ public class ComportamientoSemaforo extends WakerBehaviour {
      * El mensaje contiene el objeto Semaforo asociado al agente semáforo.
      */
     public void enviarMensajeCambioDireccionPermitidaSemaforo() {
-
-        ACLMessage mensaje = new ACLMessage(ACLMessage.INFORM);
-        mensaje.addReceiver(agenteSemaforo.getSceneAgentAID());
-        mensaje.setContent("CambioDireccionPermitidaSemaforo");
-        try {
-            mensaje.setContentObject(agenteSemaforo.getSemaforo());
-            agenteSemaforo.send(mensaje);
-        } catch (IOException e) {
-            System.err.println(getClass() + " " + e.getMessage());
+        AID receptor = agenteSemaforo.getAIDAgenteControlTrafico();
+        if(receptor!=null) {
+            ACLMessage mensaje = new ACLMessage(ACLMessage.INFORM);
+            mensaje.addReceiver(agenteSemaforo.getAIDAgenteControlTrafico());
+            mensaje.setContent("CambioDireccionPermitidaSemaforo");
+            try {
+                mensaje.setContentObject(agenteSemaforo.getSemaforo());
+                agenteSemaforo.send(mensaje);
+            } catch (IOException e) {
+                System.err.println(getClass() + " " + e.getMessage());
+            }
         }
     }
 

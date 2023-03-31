@@ -53,7 +53,7 @@ public class AgenteSimuladorEntorno extends Agent {
             // TODO: 30/03/2023 quitar AID y pasar como localname
             //Pasamos la celda inicial
 //            PassableCell initCell = (PassableCell) matrix.getCell(matrix.getMatrixIntroPosition());
-            c.createNewAgent(name, "es.uma.isia.sma.controller.AgenteCoche", new Object[]{ getAID()});
+            c.createNewAgent(name, "es.uma.isia.sma.controller.AgenteCoche", null);
             AgentController agentController = c.getAgent(name);
             agentController.start();
             listadoControladoresCoches.add(agentController);
@@ -71,7 +71,7 @@ public class AgenteSimuladorEntorno extends Agent {
                     try {
                         Semaforo semaforo = (Semaforo) entornoUrbano[i][j];
                         String nickname = "semaforo_" + semaforo.getCoordenadas().x + "_" + semaforo.getCoordenadas().y;
-                        c.createNewAgent(nickname, "es.uma.isia.sma.controller.AgenteSemaforo", new Object[]{semaforo, getAID()});
+                        c.createNewAgent(nickname, "es.uma.isia.sma.controller.AgenteSemaforo", new Object[]{semaforo});
                         AgentController agentController = c.getAgent(nickname);
                         agentController.start();
                         listadoControladoresSemaforos.add(agentController);
@@ -87,11 +87,10 @@ public class AgenteSimuladorEntorno extends Agent {
 
     public void crearControlTrafico() {
         entornoUrbano = GeneradorEntornoUrbano.generarMockup();
-        // TODO: 30/03/2023 incicializar control de tráfico
         ContainerController c = getContainerController();
         try {
-            c.createNewAgent("control_trafico", "es.uma.isia.sma.controller.AgenteControlTrafico", null);
-            controladorTrafico = c.getAgent("control_trafico");
+            c.createNewAgent("agente-control-trafico", "es.uma.isia.sma.controller.AgenteControlTrafico", null);
+            controladorTrafico = c.getAgent("agente-control-trafico");
             controladorTrafico.start();
         } catch (StaleProxyException e) {
             throw new RuntimeException(e);
