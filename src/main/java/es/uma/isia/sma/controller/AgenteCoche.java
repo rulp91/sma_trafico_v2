@@ -18,10 +18,7 @@ import java.util.logging.Logger;
  * del coche.
  */
 public class AgenteCoche extends Agent {
-
-    // Crear un Logger para la clase
     private static final Logger logger = LoggerController.getInstance().getLogger(ComportamientoCoche.class.getName());
-
 
     private CeldaTransitable celdaActual;
 

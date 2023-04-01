@@ -33,7 +33,7 @@ public class ComportamientoCentralitaRecepcionMensajesCoches extends SimpleBehav
             try {
                 CeldaTransitable celdaActual = (CeldaTransitable) msg.getContentObject();
                 CeldaTransitable siguienteCelda = EntornoUrbanoManager.getInstance().getSiguienteCeldaTransitable(celdaActual);
-                if (siguienteCelda != null && !agenteControlTrafico.estaOcupada(siguienteCelda.getCoordenadas())) {
+                if (siguienteCelda != null && !agenteControlTrafico.esPosicionOcupada(siguienteCelda.getCoordenadas())) {
                     // Si la siguiente celda es un semáforo, verifica si la dirección permitida es la actual
                     if (esSemaforoConDireccionPermitida(siguienteCelda, celdaActual)) {
                         System.out.println("Es un semaforo y la dirección está permitida");

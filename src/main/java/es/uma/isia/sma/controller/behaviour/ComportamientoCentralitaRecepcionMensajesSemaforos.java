@@ -35,7 +35,7 @@ public class ComportamientoCentralitaRecepcionMensajesSemaforos extends SimpleBe
             // Procesar el mensaje de AgenteSemaforo
             try {
                 Semaforo semaforo = (Semaforo) msg.getContentObject();
-                agenteControlTrafico.cambioDireccionPermitidaSemaforo(semaforo);
+                agenteControlTrafico.actualizarDireccionPermitidaSemaforo(semaforo);
             } catch (UnreadableException e) {
              //   System.err.println(e.getMessage());
             }
