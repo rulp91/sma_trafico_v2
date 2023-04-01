@@ -1,30 +1,57 @@
 package es.uma.isia.sma.controller;
 
+import es.uma.isia.sma.controller.behaviour.ComportamientoCentralitaRecepcionMensajesCoches;
 import es.uma.isia.sma.controller.behaviour.ComportamientoCoche;
+import es.uma.isia.sma.model.celdas.Celda;
+import es.uma.isia.sma.model.celdas.CeldaTransitable;
+import es.uma.isia.sma.model.coordenadas.Coordenada;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.ParallelBehaviour;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.domain.FIPANames;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
-public class AgenteControlTrafico extends Agent{
+public class AgenteControlTrafico extends Agent {
+    private Celda[][] entornoUrbano;
+    private boolean[][] posicionesOcupadas;
 
     protected void setup() {
 
         System.out.println("My local name is " + getAID().getLocalName());
 
+        //Recuperamos la matriz de tráfico
+        entornoUrbano = EntornoUrbanoSingleton.getInstance().getEntornoUrbano();
+        incicilizarPosicionesOcupdas();
+
         //Registro el agente en el DF
         registrarAgente();
-        addBehaviour(new CyclicBehaviour() {
-            @Override
-            public void action() {
+        ParallelBehaviour parallelBehaviour = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ALL);
+        parallelBehaviour.addSubBehaviour(new ComportamientoCentralitaRecepcionMensajesCoches(this));
+        parallelBehaviour.addSubBehaviour(new ReceiveSemaforoUpdateBehaviour());
+        addBehaviour(parallelBehaviour);
 
+    }
+
+    private void incicilizarPosicionesOcupdas() {
+        int filas = entornoUrbano.length;
+        int columnas = entornoUrbano[0].length;
+
+        posicionesOcupadas = new boolean[filas][columnas];
+
+        // Inicializa la matriz posicionesOcupadas con 'false' (ninguna posición ocupada)
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                posicionesOcupadas[i][j] = false;
             }
-
-        });
-
+        }
     }
 
     private void registrarAgente() {
@@ -58,4 +85,41 @@ public class AgenteControlTrafico extends Agent{
 
         super.takeDown();
     }
+
+    public synchronized boolean estaOcupada(Coordenada coordenadas) {
+        return posicionesOcupadas[coordenadas.x][coordenadas.y];
+    }
+
+    public synchronized void marcarPosicion(Coordenada coordenadas, boolean ocupada) {
+         posicionesOcupadas[coordenadas.x][coordenadas.y] = ocupada;
+    }
+
+    private class ReceiveSemaforoUpdateBehaviour extends SimpleBehaviour {
+        private boolean done = false;
+
+        @Override
+        public void action() {
+            MessageTemplate mt = MessageTemplate.and(
+                    MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+                    MessageTemplate.MatchContent("CambioDireccionPermitidaSemaforo")
+            );
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                // Procesar el mensaje de AgenteSemaforo
+                // ...
+
+                // Establecer done a true si deseas que este comportamiento se ejecute solo una vez
+                // Establecer done a false si deseas que este comportamiento se ejecute continuamente
+                done = false;
+            } else {
+                block();
+            }
+        }
+
+        @Override
+        public boolean done() {
+            return done;
+        }
+    }
+
 }
