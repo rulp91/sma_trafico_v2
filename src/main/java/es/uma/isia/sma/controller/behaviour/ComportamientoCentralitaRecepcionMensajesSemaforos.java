@@ -17,9 +17,18 @@ public class ComportamientoCentralitaRecepcionMensajesSemaforos extends SimpleBe
 
     @Override
     public void action() {
+        // Como enfoque alternativo a MessageTemplate.MatchContent, envío el objeto Semáforo directamente como contenido
+        // del mensaje y luego filtro los mensajes recibidos utilizando una condición personalizada en el comportamiento
+        // receptor. Esto se debe a que no me está funcionando MatchContent
         MessageTemplate mt = MessageTemplate.and(
                 MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-                MessageTemplate.MatchContent("CambioDireccionPermitidaSemaforo")
+                new MessageTemplate((ACLMessage msg) -> {
+                    try {
+                        return msg.getContentObject() instanceof Semaforo;
+                    } catch (UnreadableException e) {
+                        return false;
+                    }
+                })
         );
         ACLMessage msg = agenteControlTrafico.receive(mt);
         if (msg != null) {
@@ -28,9 +37,8 @@ public class ComportamientoCentralitaRecepcionMensajesSemaforos extends SimpleBe
                 Semaforo semaforo = (Semaforo) msg.getContentObject();
                 agenteControlTrafico.cambioDireccionPermitidaSemaforo(semaforo);
             } catch (UnreadableException e) {
-                System.err.println(e.getMessage());
+             //   System.err.println(e.getMessage());
             }
-            done = false;
         } else {
             block();
         }

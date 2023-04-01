@@ -58,14 +58,12 @@ public class ComportamientoSemaforo extends WakerBehaviour {
         if(receptor!=null) {
             ACLMessage mensaje = new ACLMessage(ACLMessage.INFORM);
             mensaje.addReceiver(agenteSemaforo.getAIDAgenteControlTrafico());
-            mensaje.setContent("CambioDireccionPermitidaSemaforo");
             try {
                 Semaforo semaforo = agenteSemaforo.getSemaforo();
                 mensaje.setContentObject(semaforo);
-                System.out.println("Enviando mensaje: " + mensaje);
                 agenteSemaforo.send(mensaje);
             } catch (IOException e) {
-                System.err.println(getClass() + " " + e.getMessage());
+               // System.err.println(getClass() + " " + e.getMessage());
             }
         }
     }
