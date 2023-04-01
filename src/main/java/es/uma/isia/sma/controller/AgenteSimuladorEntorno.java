@@ -1,15 +1,12 @@
 package es.uma.isia.sma.controller;
 
 import es.uma.isia.sma.controller.behaviour.ComportamientoSimulacionEntorno;
-import es.uma.isia.sma.helper.GeneradorEntornoUrbano;
-import es.uma.isia.sma.model.celdas.Celda;
 import es.uma.isia.sma.model.celdas.Semaforo;
 import jade.core.Agent;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
-import javafx.scene.control.Cell;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -65,7 +62,7 @@ public class AgenteSimuladorEntorno extends Agent {
     }
     public void inicilizarSemaforos() {
         ContainerController c = getContainerController();
-        List<Semaforo> semaforos = EntornoUrbanoSingleton.getInstance().getSemaforos();
+        List<Semaforo> semaforos = EntornoUrbanoManager.getInstance().getSemaforos();
         for (Semaforo semaforo: semaforos) {
             try {
                 String nickname = "semaforo_" + semaforo.getCoordenadas().x + "_" + semaforo.getCoordenadas().y;
@@ -82,7 +79,7 @@ public class AgenteSimuladorEntorno extends Agent {
     }
 
     public void crearControlTrafico() {
-        EntornoUrbanoSingleton.getInstance();
+        EntornoUrbanoManager.getInstance();
         ContainerController c = getContainerController();
         try {
             c.createNewAgent("agente-control-trafico", "es.uma.isia.sma.controller.AgenteControlTrafico", null);

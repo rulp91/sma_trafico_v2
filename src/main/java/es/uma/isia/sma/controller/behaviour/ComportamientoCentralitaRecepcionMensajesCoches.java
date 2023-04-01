@@ -1,7 +1,7 @@
 package es.uma.isia.sma.controller.behaviour;
 
 import es.uma.isia.sma.controller.AgenteControlTrafico;
-import es.uma.isia.sma.controller.EntornoUrbanoSingleton;
+import es.uma.isia.sma.controller.EntornoUrbanoManager;
 import es.uma.isia.sma.model.celdas.Celda;
 import es.uma.isia.sma.model.celdas.CeldaTransitable;
 import es.uma.isia.sma.model.celdas.Semaforo;
@@ -32,7 +32,7 @@ public class ComportamientoCentralitaRecepcionMensajesCoches extends SimpleBehav
             // Procesar el mensaje de AgenteCoche
             try {
                 CeldaTransitable celdaActual = (CeldaTransitable) msg.getContentObject();
-                CeldaTransitable siguienteCelda = EntornoUrbanoSingleton.getInstance().getSiguienteCeldaTransitable(celdaActual);
+                CeldaTransitable siguienteCelda = EntornoUrbanoManager.getInstance().getSiguienteCeldaTransitable(celdaActual);
                 if (siguienteCelda != null && !agenteControlTrafico.estaOcupada(siguienteCelda.getCoordenadas())) {
                     // Si la siguiente celda es un semáforo, verifica si la dirección permitida es la actual
                     if (esSemaforoConDireccionPermitida(siguienteCelda, celdaActual)) {

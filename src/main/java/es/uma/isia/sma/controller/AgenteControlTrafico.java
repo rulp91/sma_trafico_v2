@@ -25,7 +25,7 @@ public class AgenteControlTrafico extends Agent {
         System.out.println("My local name is " + getAID().getLocalName());
 
         //Recuperamos la matriz de tráfico
-        EntornoUrbanoSingleton instancia = EntornoUrbanoSingleton.getInstance();
+        EntornoUrbanoManager instancia = EntornoUrbanoManager.getInstance();
         entornoUrbano = instancia.getEntornoUrbano();
         semaforos = instancia.getSemaforos();
         incicilizarPosicionesOcupadas();

@@ -10,32 +10,48 @@ import es.uma.isia.sma.model.coordenadas.Direccion;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntornoUrbanoSingleton {
-    private static EntornoUrbanoSingleton instance;
+/**
+ * Esta clase proporciona acceso y manejo del entorno urbano, incluyendo la obtención de celdas específicas, semáforos y
+ * celdas transitables. El entorno urbano se representa como una matriz bidimensional de celdas, que pueden ser
+ * transitables o no transitables.
+ */
+public class EntornoUrbanoManager {
+    private static EntornoUrbanoManager instance;
     private Celda[][] entornoUrbano;
 
-    private EntornoUrbanoSingleton() {
+    private EntornoUrbanoManager() {
         entornoUrbano = GeneradorEntornoUrbano.generarMockup();
     }
 
-    public static synchronized EntornoUrbanoSingleton getInstance() {
+    public static synchronized EntornoUrbanoManager getInstance() {
         if (instance == null) {
-            instance = new EntornoUrbanoSingleton();
+            instance = new EntornoUrbanoManager();
         }
         return instance;
     }
+
 
     public Celda[][] getEntornoUrbano() {
         return entornoUrbano;
     }
 
-    public CeldaTransitable getCeldaInicial() {
+    /**
+     * Devuelve la entrada del entorno urbano, que es la celda inicial desde donde los coches pueden comenzar a moverse.
+     *
+     * @return la entrada del entorno urbano, que es una instancia de {@link CeldaTransitable}
+     */
+    public CeldaTransitable getEntradaEntornoUrbano() {
         int filas = entornoUrbano.length;
 
         // La celda inicial es la de la esquina inferior izquierda
         return (CeldaTransitable) entornoUrbano[filas - 1][0];
     }
 
+    /**
+     * Obtiene una lista de todos los semáforos presentes en el entorno urbano.
+     *
+     * @return una lista de {@link Semaforo} que contiene todos los semáforos en el entorno urbano
+     */
     public List<Semaforo> getSemaforos() {
         List<Semaforo> celdasSemaforo = new ArrayList<>();
 
@@ -51,10 +67,18 @@ public class EntornoUrbanoSingleton {
         return celdasSemaforo;
     }
 
+    /**
+     * Dada la celda transitable actual, obtiene la siguiente celda transitable en la dirección de la celda actual.
+     * Si la celda actual es null significa que el coche aún no ha entrado al entorno urbano,
+     * asi que devuelve la entrada del entorno urbano.
+     *
+     * @param celdaActual la celda transitable actual desde la que se busca la siguiente celda transitable
+     * @return la siguiente {@link CeldaTransitable} en la dirección de la celda actual, o null si no hay una siguiente celda transitable
+     */
     public CeldaTransitable getSiguienteCeldaTransitable(CeldaTransitable celdaActual) {
 
         if (celdaActual == null)
-            return getCeldaInicial();
+            return getEntradaEntornoUrbano();
 
         Coordenada coordenadaActual = celdaActual.getCoordenadas();
         Direccion direccion = celdaActual.getDireccion();
