@@ -1,5 +1,6 @@
 package es.uma.isia.sma.controller;
 
+import es.uma.isia.sma.controller.behaviour.ComportamientoCoche;
 import es.uma.isia.sma.controller.behaviour.ComportamientoSimulacionEntorno;
 import es.uma.isia.sma.model.celdas.Semaforo;
 import jade.core.Agent;
@@ -10,9 +11,13 @@ import jade.wrapper.StaleProxyException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class AgenteSimuladorEntorno extends Agent {
-
+    private static final Logger logger = Logger.getLogger(AgenteSimuladorEntorno.class.getName());
+    static {
+        LoggerController.getInstance().setupLogger(logger);
+    }
     private int filas;
     private int columnas;
     private int timeoutSimulacion;

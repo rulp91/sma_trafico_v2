@@ -172,6 +172,6 @@ public class Coordenada implements Serializable {
      * @return  a string representation of this point
      */
     public String toString() {
-        return getClass().getName() + "[x=" + x + ",y=" + y + "]";
+        return "(x=" + x + ",y=" + y + ")";
     }
 }
