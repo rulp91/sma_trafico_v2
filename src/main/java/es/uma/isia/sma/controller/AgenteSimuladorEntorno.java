@@ -14,10 +14,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class AgenteSimuladorEntorno extends Agent {
-    private static final Logger logger = Logger.getLogger(AgenteSimuladorEntorno.class.getName());
-    static {
-        LoggerController.getInstance().setupLogger(logger);
-    }
+
+    private static final Logger logger = LoggerController.getInstance().getLogger(AgenteSimuladorEntorno.class.getName());
+
     private int filas;
     private int columnas;
     private int timeoutSimulacion;
