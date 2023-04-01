@@ -3,8 +3,12 @@ package es.uma.isia.sma.controller;
 import es.uma.isia.sma.helper.GeneradorEntornoUrbano;
 import es.uma.isia.sma.model.celdas.Celda;
 import es.uma.isia.sma.model.celdas.CeldaTransitable;
+import es.uma.isia.sma.model.celdas.Semaforo;
 import es.uma.isia.sma.model.coordenadas.Coordenada;
 import es.uma.isia.sma.model.coordenadas.Direccion;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntornoUrbanoSingleton {
     private static EntornoUrbanoSingleton instance;
@@ -30,6 +34,21 @@ public class EntornoUrbanoSingleton {
 
         // La celda inicial es la de la esquina inferior izquierda
         return (CeldaTransitable) entornoUrbano[filas - 1][0];
+    }
+
+    public List<Semaforo> getSemaforos() {
+        List<Semaforo> celdasSemaforo = new ArrayList<>();
+
+        for (int i = 0; i < entornoUrbano.length; i++) {
+            for (int j = 0; j < entornoUrbano[i].length; j++) {
+                Celda celda = entornoUrbano[i][j];
+                if (celda instanceof Semaforo) {
+                    celdasSemaforo.add((Semaforo) celda);
+                }
+            }
+        }
+
+        return celdasSemaforo;
     }
 
     public CeldaTransitable getSiguienteCeldaTransitable(CeldaTransitable celdaActual) {

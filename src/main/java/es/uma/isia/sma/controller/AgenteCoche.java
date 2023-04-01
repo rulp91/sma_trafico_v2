@@ -17,7 +17,8 @@ import jade.domain.FIPAException;
 public class AgenteCoche  extends Agent {
 
     private CeldaTransitable celdaActual;
-    private AID sceneAgentAID;
+
+    private AID foundAgent;
 
     @Override
     /**
@@ -74,7 +75,8 @@ public class AgenteCoche  extends Agent {
      */
     public AID getAIDAgenteControlTrafico() {
 
-        AID foundAgent = null;
+        if (foundAgent != null)
+            return foundAgent;
 
         // Crear una descripción del agente y asignar un tipo de servicio
         DFAgentDescription dfd = new DFAgentDescription();

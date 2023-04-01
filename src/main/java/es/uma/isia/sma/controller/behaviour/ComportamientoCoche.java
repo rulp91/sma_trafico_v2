@@ -86,9 +86,9 @@ public class ComportamientoCoche extends TickerBehaviour {
                     block();
                 }
             } catch (IOException e) {
-                System.err.println(getClass() + " " + e.getMessage());
+               // System.err.println(getClass() + " " + e.getMessage());
             } catch (UnreadableException e) {
-                System.err.println(getClass() + " " + e.getMessage());
+              //  System.err.println(getClass() + " " + e.getMessage());
             }
         }
     }
