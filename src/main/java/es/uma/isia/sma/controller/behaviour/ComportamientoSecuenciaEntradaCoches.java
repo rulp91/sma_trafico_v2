@@ -20,7 +20,7 @@ public class ComportamientoSecuenciaEntradaCoches extends TickerBehaviour {
 
     @Override
     protected void onTick() {
-        simuladorEntorno.addCarAgent("coche_" + numeroCochesCreado);
+        simuladorEntorno.agregarAgenteCoche("coche_" + numeroCochesCreado);
         numeroCochesCreado++;
         if (numeroCochesCreado == numeroCochesACrear) {
             this.stop();

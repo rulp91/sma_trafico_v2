@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class AgenteControlTrafico extends Agent {
 
-    private static final Logger logger = LoggerController.getInstance().getLogger(AgenteControlTrafico.class.getName());
+    private static final Logger logger = LoggerController.getInstance().getLogger();
     private Celda[][] entornoUrbano;
     private boolean[][] posicionesOcupadas;
     private List<Semaforo> semaforos;
@@ -32,7 +32,7 @@ public class AgenteControlTrafico extends Agent {
      * e inicializa el entorno urbano y los comportamientos del agente.
      */
     protected void setup() {
-        logger.info("My local name is " + getAID().getLocalName());
+        logger.info("Creación de agente:  " + getAID().getLocalName());
         inicializarEntornoUrbano();
         registrarAgente();
         iniciarComportamientos();

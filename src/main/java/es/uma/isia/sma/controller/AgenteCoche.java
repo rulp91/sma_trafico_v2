@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * del coche.
  */
 public class AgenteCoche extends Agent {
-    private static final Logger logger = LoggerController.getInstance().getLogger(ComportamientoCoche.class.getName());
+    private static final Logger logger = LoggerController.getInstance().getLogger();
 
     private CeldaTransitable celdaActual;
 
@@ -31,7 +31,7 @@ public class AgenteCoche extends Agent {
      */
     protected void setup() {
 
-        logger.info("My local name is " + getAID().getLocalName());
+        logger.info("Creación de agente:  " + getAID().getLocalName());
 
         //Registro el agente en el DF
         registrarAgente();

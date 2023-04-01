@@ -19,8 +19,11 @@ import java.util.logging.*;
 public class LoggerController {
     private static final String LOG_DIRECTORY = "log";
     private static LoggerController instance;
+    private final Logger logger;
 
     private LoggerController() {
+        logger = Logger.getLogger("ControlTrafico");
+        setupLogger(logger);
     }
 
     public static synchronized LoggerController getInstance() {
@@ -35,12 +38,9 @@ public class LoggerController {
      * para mostrar mensajes de información en la consola y almacenar mensajes de advertencia y niveles
      * superiores en un archivo de registro en la carpeta "log" del proyecto.
      *
-     * @param classname El nombre completo de la clase para la cual se quiere obtener un Logger.
      * @return Un Logger configurado para la clase especificada.
      */
-    public Logger getLogger(String classname) {
-        Logger logger = Logger.getLogger(classname);
-        setupLogger(logger);
+    public Logger getLogger() {
         return logger;
     }
 

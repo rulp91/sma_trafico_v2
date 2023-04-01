@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  */
 public class AgenteSemaforo extends Agent {
 
-    private static final Logger logger = LoggerController.getInstance().getLogger(AgenteSemaforo.class.getName());
+    private static final Logger logger = LoggerController.getInstance().getLogger();
     private Semaforo semaforo;
     private AID agenteControlTraficoAID = null;
 
@@ -32,7 +32,7 @@ public class AgenteSemaforo extends Agent {
         if (args == null || args.length == 0)
             doDelete();
 
-        logger.info("My local name is " + getAID().getLocalName());
+        logger.info("Creación de agente:  " + getAID().getLocalName());
         semaforo = (Semaforo) args[0];
 
         //Registro el agente en el DF

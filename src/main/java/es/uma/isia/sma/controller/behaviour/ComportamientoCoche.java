@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class ComportamientoCoche extends TickerBehaviour {
 
-    private static final Logger logger = LoggerController.getInstance().getLogger(ComportamientoCoche.class.getName());
+    private static final Logger logger = LoggerController.getInstance().getLogger();
 
     /**
      * El agente Coche al que pertenece este comportamiento.
