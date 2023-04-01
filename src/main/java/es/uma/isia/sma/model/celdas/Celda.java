@@ -1,11 +1,12 @@
-package es.isia.sm.model.celdas;
+package es.uma.isia.sma.model.celdas;
 
-import es.isia.sm.model.coordenadas.Coordenada;
+import es.uma.isia.sma.model.coordenadas.Coordenada;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 public abstract class Celda implements Serializable {
+    private static final long serialVersionUID = 1572468285725371240L;
     private final Coordenada coordenadas;
 
     public Celda(Coordenada coordenadas) {

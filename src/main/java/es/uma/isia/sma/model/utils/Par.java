@@ -1,4 +1,4 @@
-package es.isia.sm.model.utils;
+package es.uma.isia.sma.model.utils;
 
 import java.util.Objects;
 

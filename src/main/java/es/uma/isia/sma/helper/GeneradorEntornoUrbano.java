@@ -1,11 +1,12 @@
-package es.isia.sm.helper;
+package es.uma.isia.sma.helper;
 
-import es.isia.sm.model.celdas.Bloque;
-import es.isia.sm.model.celdas.Celda;
-import es.isia.sm.model.coordenadas.Coordenada;
-import es.isia.sm.model.coordenadas.Direccion;
-import es.isia.sm.model.celdas.Semaforo;
-import es.isia.sm.model.utils.Par;
+import es.uma.isia.sma.model.celdas.Bloque;
+import es.uma.isia.sma.model.celdas.Celda;
+import es.uma.isia.sma.model.celdas.CeldaDireccionUnica;
+import es.uma.isia.sma.model.coordenadas.Coordenada;
+import es.uma.isia.sma.model.coordenadas.Direccion;
+import es.uma.isia.sma.model.celdas.Semaforo;
+import es.uma.isia.sma.model.utils.Par;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,17 @@ public class GeneradorEntornoUrbano {
             }
         }
     }
-
+    public  static Celda[][] generarMockup(){
+        GeneradorEntornoUrbano entornoUrbano = new GeneradorEntornoUrbano(10, 20);
+        entornoUrbano.generarCasillasNoTransitables(40);
+        entornoUrbano.asignarDirecciones();
+        entornoUrbano.reparaColisionesHorizontales();
+        entornoUrbano.reparaColisionesVerticales();
+        entornoUrbano.colocarSemaforosHorizontal();
+        entornoUrbano.colocarSemaforosVertical();
+        System.out.println(entornoUrbano);
+        return entornoUrbano.generarEntornoUrbano();
+    }
     /**
      * Retorna una matriz de direcciones
      * @return
@@ -53,8 +64,17 @@ public class GeneradorEntornoUrbano {
                         break;
                     case SEMAFORO:
                         entorno[i][j] = new Semaforo(new Coordenada(i,j));
+                        break;
+                    case ESTE:
+                    case OESTE:
+                    case NORTE:
+                    case SUR:
+                        entorno[i][j] = new CeldaDireccionUnica(new Coordenada(i,j), matriz[i][j]);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("El valor " + matriz[i][j] + " no corresponde a ninguna dirección conocida.");
                 }
-                //entorno[i][j] = new
+
             }
         }
 
