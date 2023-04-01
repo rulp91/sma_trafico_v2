@@ -3,7 +3,9 @@ package es.uma.isia.sma.model.celdas;
 import es.uma.isia.sma.model.coordenadas.Coordenada;
 import es.uma.isia.sma.model.coordenadas.Direccion;
 
-public class Semaforo extends CeldaTransitable {
+import java.io.Serializable;
+
+public class Semaforo extends CeldaTransitable implements Serializable {
 
     private static final long serialVersionUID = 6500957949937663625L;
 

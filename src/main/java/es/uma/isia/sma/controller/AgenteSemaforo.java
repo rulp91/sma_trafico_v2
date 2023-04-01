@@ -17,7 +17,7 @@ import jade.domain.FIPAException;
  */
 public class AgenteSemaforo extends Agent {
     private Semaforo semaforo;
-
+    private AID foundAgent = null;
 
     @Override
     protected void setup() {
@@ -74,7 +74,8 @@ public class AgenteSemaforo extends Agent {
      */
     public AID getAIDAgenteControlTrafico() {
 
-        AID foundAgent = null;
+        if (foundAgent != null)
+            return foundAgent;
 
         // Crear una descripción del agente y asignar un tipo de servicio
         DFAgentDescription dfd = new DFAgentDescription();

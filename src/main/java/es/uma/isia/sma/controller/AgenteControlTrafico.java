@@ -1,46 +1,45 @@
 package es.uma.isia.sma.controller;
 
 import es.uma.isia.sma.controller.behaviour.ComportamientoCentralitaRecepcionMensajesCoches;
-import es.uma.isia.sma.controller.behaviour.ComportamientoCoche;
+import es.uma.isia.sma.controller.behaviour.ComportamientoCentralitaRecepcionMensajesSemaforos;
 import es.uma.isia.sma.model.celdas.Celda;
-import es.uma.isia.sma.model.celdas.CeldaTransitable;
+import es.uma.isia.sma.model.celdas.Semaforo;
 import es.uma.isia.sma.model.coordenadas.Coordenada;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
-import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.domain.FIPANames;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
+
+import java.util.List;
 
 public class AgenteControlTrafico extends Agent {
     private Celda[][] entornoUrbano;
     private boolean[][] posicionesOcupadas;
+
+    private List<Semaforo> semaforos;
 
     protected void setup() {
 
         System.out.println("My local name is " + getAID().getLocalName());
 
         //Recuperamos la matriz de tráfico
-        entornoUrbano = EntornoUrbanoSingleton.getInstance().getEntornoUrbano();
-        incicilizarPosicionesOcupdas();
+        EntornoUrbanoSingleton instancia = EntornoUrbanoSingleton.getInstance();
+        entornoUrbano = instancia.getEntornoUrbano();
+        semaforos = instancia.getSemaforos();
+        incicilizarPosicionesOcupadas();
 
         //Registro el agente en el DF
         registrarAgente();
         ParallelBehaviour parallelBehaviour = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ALL);
         parallelBehaviour.addSubBehaviour(new ComportamientoCentralitaRecepcionMensajesCoches(this));
-        parallelBehaviour.addSubBehaviour(new ReceiveSemaforoUpdateBehaviour());
+        parallelBehaviour.addSubBehaviour(new ComportamientoCentralitaRecepcionMensajesSemaforos(this));
         addBehaviour(parallelBehaviour);
 
     }
 
-    private void incicilizarPosicionesOcupdas() {
+    private void incicilizarPosicionesOcupadas() {
         int filas = entornoUrbano.length;
         int columnas = entornoUrbano[0].length;
 
@@ -94,32 +93,11 @@ public class AgenteControlTrafico extends Agent {
          posicionesOcupadas[coordenadas.x][coordenadas.y] = ocupada;
     }
 
-    private class ReceiveSemaforoUpdateBehaviour extends SimpleBehaviour {
-        private boolean done = false;
-
-        @Override
-        public void action() {
-            MessageTemplate mt = MessageTemplate.and(
-                    MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-                    MessageTemplate.MatchContent("CambioDireccionPermitidaSemaforo")
-            );
-            ACLMessage msg = myAgent.receive(mt);
-            if (msg != null) {
-                // Procesar el mensaje de AgenteSemaforo
-                // ...
-
-                // Establecer done a true si deseas que este comportamiento se ejecute solo una vez
-                // Establecer done a false si deseas que este comportamiento se ejecute continuamente
-                done = false;
-            } else {
-                block();
-            }
-        }
-
-        @Override
-        public boolean done() {
-            return done;
+    public synchronized void cambioDireccionPermitidaSemaforo(Semaforo semaforo) {
+        if(semaforos.contains(semaforo) && estaOcupada(semaforo.getCoordenadas())){
+            System.out.println("Informar cambio de direccion para coche");
         }
     }
+
 
 }

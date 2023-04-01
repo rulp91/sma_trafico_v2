@@ -65,23 +65,18 @@ public class AgenteSimuladorEntorno extends Agent {
     }
     public void inicilizarSemaforos() {
         ContainerController c = getContainerController();
-        Celda[][] entornoUrbano = EntornoUrbanoSingleton.getInstance().getEntornoUrbano();
-        for(int i= 0; i  < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                if(entornoUrbano[i][j] instanceof Semaforo) {
-                    try {
-                        Semaforo semaforo = (Semaforo) entornoUrbano[i][j];
-                        String nickname = "semaforo_" + semaforo.getCoordenadas().x + "_" + semaforo.getCoordenadas().y;
-                        c.createNewAgent(nickname, "es.uma.isia.sma.controller.AgenteSemaforo", new Object[]{semaforo});
-                        AgentController agentController = c.getAgent(nickname);
-                        agentController.start();
-                        listadoControladoresSemaforos.add(agentController);
-                    } catch (StaleProxyException e) {
-                        throw new RuntimeException(e);
-                    } catch (ControllerException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+        List<Semaforo> semaforos = EntornoUrbanoSingleton.getInstance().getSemaforos();
+        for (Semaforo semaforo: semaforos) {
+            try {
+                String nickname = "semaforo_" + semaforo.getCoordenadas().x + "_" + semaforo.getCoordenadas().y;
+                c.createNewAgent(nickname, "es.uma.isia.sma.controller.AgenteSemaforo", new Object[]{semaforo});
+                AgentController agentController = c.getAgent(nickname);
+                agentController.start();
+                listadoControladoresSemaforos.add(agentController);
+            } catch (StaleProxyException e) {
+                throw new RuntimeException(e);
+            } catch (ControllerException e) {
+                throw new RuntimeException(e);
             }
         }
     }
