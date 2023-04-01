@@ -2,24 +2,15 @@ package es.uma.isia.sma.controller;
 
 import es.uma.isia.sma.controller.behaviour.ComportamientoCentralitaRecepcionMensajesCoches;
 import es.uma.isia.sma.controller.behaviour.ComportamientoCentralitaRecepcionMensajesSemaforos;
-import es.uma.isia.sma.controller.behaviour.ComportamientoCoche;
 import es.uma.isia.sma.model.celdas.Celda;
-import es.uma.isia.sma.model.celdas.CeldaTransitable;
 import es.uma.isia.sma.model.celdas.Semaforo;
 import es.uma.isia.sma.model.coordenadas.Coordenada;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
-import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.domain.FIPANames;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
 import java.util.List;
 
@@ -37,7 +28,7 @@ public class AgenteControlTrafico extends Agent {
         EntornoUrbanoSingleton instancia = EntornoUrbanoSingleton.getInstance();
         entornoUrbano = instancia.getEntornoUrbano();
         semaforos = instancia.getSemaforos();
-        incicilizarPosicionesOcupdas();
+        incicilizarPosicionesOcupadas();
 
         //Registro el agente en el DF
         registrarAgente();
@@ -48,7 +39,7 @@ public class AgenteControlTrafico extends Agent {
 
     }
 
-    private void incicilizarPosicionesOcupdas() {
+    private void incicilizarPosicionesOcupadas() {
         int filas = entornoUrbano.length;
         int columnas = entornoUrbano[0].length;
 

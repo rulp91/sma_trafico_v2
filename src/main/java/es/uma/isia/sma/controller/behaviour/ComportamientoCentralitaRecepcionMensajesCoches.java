@@ -2,6 +2,7 @@ package es.uma.isia.sma.controller.behaviour;
 
 import es.uma.isia.sma.controller.AgenteControlTrafico;
 import es.uma.isia.sma.controller.EntornoUrbanoSingleton;
+import es.uma.isia.sma.model.celdas.Celda;
 import es.uma.isia.sma.model.celdas.CeldaTransitable;
 import es.uma.isia.sma.model.celdas.Semaforo;
 import jade.core.behaviours.SimpleBehaviour;
@@ -32,28 +33,28 @@ public class ComportamientoCentralitaRecepcionMensajesCoches extends SimpleBehav
             try {
                 CeldaTransitable celdaActual = (CeldaTransitable) msg.getContentObject();
                 CeldaTransitable siguienteCelda = EntornoUrbanoSingleton.getInstance().getSiguienteCeldaTransitable(celdaActual);
-                if(siguienteCelda!=null && !agenteControlTrafico.estaOcupada(siguienteCelda.getCoordenadas())){
-
-                    //Si la siguiente celda es un semaforo hay que saber si la dirección permitida es en la que voy
-                    // if(siguienteCelda instanceof Semaforo)
-
-
-                    //Si la celda actual no es null, liberala
-                    if(celdaActual!=null)
-                        agenteControlTrafico.marcarPosicion(celdaActual.getCoordenadas(), false);
-
-                    // Marca la actual como ocupada
-                    agenteControlTrafico.marcarPosicion(siguienteCelda.getCoordenadas(), true);
-                    enviarMensajeAvance(msg, siguienteCelda);
-
-                }else{
+                if (siguienteCelda != null && !agenteControlTrafico.estaOcupada(siguienteCelda.getCoordenadas())) {
+                    // Si la siguiente celda es un semáforo, verifica si la dirección permitida es la actual
+                    if (esSemaforoConDireccionPermitida(siguienteCelda, celdaActual)) {
+                        System.out.println("Es un semaforo y la dirección está permitida");
+                        liberarCeldaActual(celdaActual);
+                        ocuparSiguienteCelda(siguienteCelda);
+                        enviarMensajeAvance(msg, siguienteCelda);
+                    } else if (!(siguienteCelda instanceof Semaforo)) {
+                        liberarCeldaActual(celdaActual);
+                        ocuparSiguienteCelda(siguienteCelda);
+                        enviarMensajeAvance(msg, siguienteCelda);
+                    } else {
+                        enviarMensajeRechazoAvance(msg);
+                    }
+                } else {
                     enviarMensajeRechazoAvance(msg);
                 }
 
             } catch (UnreadableException e) {
-                throw new RuntimeException(e);
+                // throw new RuntimeException(e);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                // throw new RuntimeException(e);
             }
 
             done = false;
@@ -61,22 +62,41 @@ public class ComportamientoCentralitaRecepcionMensajesCoches extends SimpleBehav
             block();
         }
     }
-    private void enviarMensajeAvance(ACLMessage msg, CeldaTransitable siguienteCelda) throws IOException {
-        ACLMessage reply = msg.createReply();
-        reply.setPerformative(ACLMessage.AGREE);
-        reply.setContent("Avanza a la celda "+ siguienteCelda.getCoordenadas());
-        reply.setContentObject(siguienteCelda);
-        myAgent.send(reply);
+
+    private void enviarMensajeAvance(ACLMessage mensaje, CeldaTransitable siguienteCelda) throws IOException {
+        ACLMessage respuesta = mensaje.createReply();
+        respuesta.setPerformative(ACLMessage.AGREE);
+        respuesta.setContent("Avanza a la celda " + siguienteCelda.getCoordenadas());
+        respuesta.setContentObject(siguienteCelda);
+        agenteControlTrafico.send(respuesta);
     }
 
-    private void enviarMensajeRechazoAvance(ACLMessage msg) {
-        ACLMessage reply = msg.createReply();
-        reply.setPerformative(ACLMessage.AGREE);
+    private void enviarMensajeRechazoAvance(ACLMessage mensaje) {
+        ACLMessage reply = mensaje.createReply();
+        reply.setPerformative(ACLMessage.REFUSE);
         reply.setContent("No puedes avanzar por ahora");
 
-        myAgent.send(reply);
+        agenteControlTrafico.send(reply);
     }
 
+
+    private boolean esSemaforoConDireccionPermitida(CeldaTransitable siguienteCelda, CeldaTransitable celdaActual) {
+        if (siguienteCelda instanceof Semaforo) {
+            Semaforo semaforo = (Semaforo) siguienteCelda;
+            return celdaActual != null && semaforo.getDireccion() == celdaActual.getDireccion();
+        }
+        return false;
+    }
+
+    private void liberarCeldaActual(Celda celdaActual) {
+        if (celdaActual != null) {
+            agenteControlTrafico.marcarPosicion(celdaActual.getCoordenadas(), false);
+        }
+    }
+
+    private void ocuparSiguienteCelda(Celda siguienteCelda) {
+        agenteControlTrafico.marcarPosicion(siguienteCelda.getCoordenadas(), true);
+    }
 
 
     @Override

@@ -73,7 +73,6 @@ public class ComportamientoCoche extends TickerBehaviour {
                 ACLMessage respuesta = coche.blockingReceive();
                 if (respuesta != null) {
                     if (respuesta.getPerformative() == ACLMessage.AGREE) {
-                        //System.out.println("El agente Scene ha aceptado la petición.");
                         CeldaTransitable siguienteCelda = (CeldaTransitable) respuesta.getContentObject();
                         coche.avance(siguienteCelda);
                         System.out.println("El coche "+coche.getAID().getLocalName()+" avanza a "+siguienteCelda.getCoordenadas());
