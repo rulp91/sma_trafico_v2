@@ -41,7 +41,7 @@ public class ComportamientoSemaforo extends WakerBehaviour {
      */
     protected void onWake() {
 
-        agenteSemaforo.cambiaDireccionPermitida();
+        agenteSemaforo.cambiarDireccionPermitida();
         enviarMensajeCambioDireccionPermitidaSemaforo();
 
         // resetea el tiempo

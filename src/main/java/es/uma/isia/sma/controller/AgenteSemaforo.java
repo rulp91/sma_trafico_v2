@@ -10,29 +10,35 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Clase AgenteSemaforo que representa un agente semáforo en el simulador.
  * Extiende la clase Agent de Jade y se encarga de gestionar el comportamiento
  * del semáforo.
  */
 public class AgenteSemaforo extends Agent {
+
+    private static final Logger logger = LoggerController.getInstance().getLogger(AgenteSemaforo.class.getName());
     private Semaforo semaforo;
-    private AID foundAgent = null;
+    private AID agenteControlTraficoAID = null;
 
     @Override
     protected void setup() {
+
         // Se le pasa como parámetro la celda que ocupa el semaforo
         Object[] args = getArguments();
         if (args == null || args.length == 0)
             doDelete();
 
-        System.out.println("My local name is " + getAID().getLocalName());
+        logger.info("My local name is " + getAID().getLocalName());
         semaforo = (Semaforo) args[0];
-
 
         //Registro el agente en el DF
         registrarAgente();
 
+        // Añadir comportamiento
         addBehaviour(new ComportamientoSemaforo(this));
     }
 
@@ -46,11 +52,9 @@ public class AgenteSemaforo extends Agent {
     }
 
     /**
-     * Método que devuelve el AID del agente escena al que debe enviar mensajes.
-     *
-     * @return El AID del agente escena al que debe enviar mensajes.
+     * Cambia la dirección permitida del semáforo.
      */
-    public void cambiaDireccionPermitida() {
+    public void cambiarDireccionPermitida() {
         switch (semaforo.getDireccion()) {
             case NORTE:
                 semaforo.direccionPermitida(Direccion.ESTE);
@@ -74,8 +78,8 @@ public class AgenteSemaforo extends Agent {
      */
     public AID getAIDAgenteControlTrafico() {
 
-        if (foundAgent != null)
-            return foundAgent;
+        if (agenteControlTraficoAID != null)
+            return agenteControlTraficoAID;
 
         // Crear una descripción del agente y asignar un tipo de servicio
         DFAgentDescription dfd = new DFAgentDescription();
@@ -89,17 +93,21 @@ public class AgenteSemaforo extends Agent {
 
             // Procesar los resultados y obtener el AID del primer agente encontrado
             if (result.length > 0) {
-                foundAgent = result[0].getName();
+                agenteControlTraficoAID = result[0].getName();
             } else {
-                System.out.println("No se encontraron agentes con el tipo de servicio especificado.");
+                logger.log(Level.INFO,"No se encontraron agentes con el tipo de servicio especificado.");
             }
         } catch (FIPAException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Error al buscar el AID del agente de control de tráfico", e);
         }
 
-        return foundAgent;
+        return agenteControlTraficoAID;
     }
 
+    /**
+     * Registra el agente en el DF (Directory Facilitator) con un tipo de servicio "semaforos".
+     * El agente se registra con su nombre local como el nombre del servicio.
+     */
     private void registrarAgente() {
         // Crear una descripción del agente
         DFAgentDescription dfd = new DFAgentDescription();
@@ -115,19 +123,17 @@ public class AgenteSemaforo extends Agent {
         try {
             DFService.register(this, dfd);
         } catch (FIPAException e) {
-            System.err.println(e);
+            logger.log(Level.WARNING, "Error al registrar el agente en el DF", e);
         }
     }
 
     @Override
     protected void takeDown() {
-        // Eliminar el registro del agente en el DF
-        // Eliminar el registro del agente en el DF
         try {
             DFService.deregister(this);
-            System.out.println(getLocalName() + ": Deregistrado  from the DF.");
+            logger.log(Level.INFO, getLocalName() + ": Deregistrado  from the DF.");
         } catch (FIPAException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error al eliminar el registro del agente en el DF", e);
         }
 
         super.takeDown();

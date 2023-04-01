@@ -22,7 +22,7 @@ public class AgenteCoche extends Agent {
 
     private CeldaTransitable celdaActual;
 
-    private AID foundAgent;
+    private AID agenteControlTraficoAID;
 
     @Override
     /**
@@ -36,6 +36,7 @@ public class AgenteCoche extends Agent {
         //Registro el agente en el DF
         registrarAgente();
 
+        // Añadir comportamiento
         addBehaviour(new ComportamientoCoche(this));
     }
 
@@ -78,10 +79,10 @@ public class AgenteCoche extends Agent {
      *
      * @return AID del agente que contreola el tráfico
      */
-    public AID getAIDAgenteControlTrafico() {
+    public AID getAgenteControlTraficoAID() {
 
-        if (foundAgent != null)
-            return foundAgent;
+        if (agenteControlTraficoAID != null)
+            return agenteControlTraficoAID;
 
         // Crear una descripción del agente y asignar un tipo de servicio
         DFAgentDescription dfd = new DFAgentDescription();
@@ -95,7 +96,7 @@ public class AgenteCoche extends Agent {
 
             // Procesar los resultados y obtener el AID del primer agente encontrado
             if (result.length > 0)
-                foundAgent = result[0].getName();
+                agenteControlTraficoAID = result[0].getName();
             else
                 logger.log(Level.INFO, "No se encontraron agentes con el tipo de servicio especificado.");
 
@@ -103,7 +104,7 @@ public class AgenteCoche extends Agent {
             logger.log(Level.WARNING, "Error al buscar el AID del agente de control de tráfico", e);
         }
 
-        return foundAgent;
+        return agenteControlTraficoAID;
     }
 
     /**
