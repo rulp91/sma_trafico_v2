@@ -1,7 +1,9 @@
 package es.uma.isia.sma.controller.behaviour;
 
 import es.uma.isia.sma.controller.AgenteSimuladorEntorno;
+import es.uma.isia.sma.controller.EntornoUrbanoManager;
 import es.uma.isia.sma.controller.LoggerController;
+import es.uma.isia.sma.helper.GeneradorEntornoUrbano;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.TickerBehaviour;
 
@@ -21,6 +23,7 @@ public class ComportamientoSimulacionEntorno extends Behaviour {
 
     private final AgenteSimuladorEntorno simuladorEntorno;
 
+    private final EntornoUrbanoManager entornoUrbanoManager;
     /**
      * Crea un comportamiento para la simulación del entorno a partir del agente simulador recibido como parámetro.
      * El comportamiento se ejecuta durante un tiempo máximo de simulación calculado a partir del tiempo máximo definido
@@ -32,6 +35,7 @@ public class ComportamientoSimulacionEntorno extends Behaviour {
         super(a);
         simuladorEntorno = a;
         timeout = 7 + simuladorEntorno.getTimeoutSimulacion();
+        entornoUrbanoManager = EntornoUrbanoManager.getInstance();
     }
 
     /**
@@ -42,17 +46,17 @@ public class ComportamientoSimulacionEntorno extends Behaviour {
         switch (pasos) {
             case 1:
                 logger.info("Paso 1: generar matriz");
-
+                entornoUrbanoManager.generaEntornoUrbano(simuladorEntorno.getFilas(), simuladorEntorno.getColumnas());
                 pasos++;
                 break;
             case 2:
                 logger.info("Paso 2: genera los bloques");
-
+                entornoUrbanoManager.generarCasillasNoTransitables(simuladorEntorno.getPorcentajeCeldasNoTransitables());
                 pasos++;
                 break;
             case 3:
                 logger.info("Paso 3: genera las direcciones");
-
+                entornoUrbanoManager.generarCasillasTransitables();
                 pasos++;
                 break;
             case 4:

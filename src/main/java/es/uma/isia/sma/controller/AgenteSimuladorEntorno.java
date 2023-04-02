@@ -145,8 +145,7 @@ public class AgenteSimuladorEntorno extends Agent {
      * @return El número de vehículos a crear.
      */
     public int getNumeroVehiculosACrear() {
-        //return (int) (filas * columnas * porcentajeVehiculos);
-        return 10;
+        return (int) (filas * columnas * porcentajeVehiculos);
     }
 
     /**
@@ -173,4 +172,17 @@ public class AgenteSimuladorEntorno extends Agent {
         listadoControladoresCoches = new LinkedList<>();
         listadoControladoresSemaforos = new LinkedList<>();
     }
+
+    public int getFilas() {
+        return filas;
+    }
+
+    public int getColumnas() {
+        return columnas;
+    }
+
+    public int getPorcentajeCeldasNoTransitables() {
+        return (int) (filas * columnas * porcentajeCeldasNoTransitables);
+    }
+
 }

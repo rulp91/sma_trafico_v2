@@ -19,8 +19,10 @@ public class EntornoUrbanoManager {
     private static EntornoUrbanoManager instance;
     private Celda[][] entornoUrbano;
 
+    private GeneradorEntornoUrbano helperEntornoUrbano;
+
     private EntornoUrbanoManager() {
-        entornoUrbano = GeneradorEntornoUrbano.generarMockup();
+
     }
 
     public static synchronized EntornoUrbanoManager getInstance() {
@@ -33,6 +35,39 @@ public class EntornoUrbanoManager {
 
     public Celda[][] getEntornoUrbano() {
         return entornoUrbano;
+    }
+
+
+    /**
+     * Genera un entorno urbano con el número de filas y columnas especificado.
+     *
+     * @param filas Número de filas del entorno urbano.
+     * @param columnas Número de columnas del entorno urbano.
+     */
+    public void generaEntornoUrbano(int filas, int columnas) {
+        helperEntornoUrbano = new GeneradorEntornoUrbano(filas, columnas);
+    }
+
+    /**
+     * Genera casillas no transitables en el entorno urbano.
+     *
+     * @param numeroCasillasNoTransitables Número de casillas no transitables a generar.
+     */
+    public void generarCasillasNoTransitables(int numeroCasillasNoTransitables) {
+        helperEntornoUrbano.generarCasillasNoTransitables(numeroCasillasNoTransitables);
+    }
+
+    /**
+     * Genera casillas transitables en el entorno urbano y coloca semáforos.
+     */
+    public void generarCasillasTransitables() {
+        helperEntornoUrbano.asignarDirecciones();
+        helperEntornoUrbano.reparaColisionesHorizontales();
+        helperEntornoUrbano.reparaColisionesVerticales();
+        helperEntornoUrbano.colocarSemaforosHorizontal();
+        helperEntornoUrbano.colocarSemaforosVertical();
+        System.out.println(helperEntornoUrbano);
+        entornoUrbano = helperEntornoUrbano.generarEntornoUrbano();
     }
 
     /**
@@ -119,4 +154,5 @@ public class EntornoUrbanoManager {
 
         return null;
     }
+
 }
