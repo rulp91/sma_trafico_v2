@@ -13,39 +13,50 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 
 import java.util.List;
+import java.util.logging.Logger;
 
+/**
+ * La clase AgenteControlTrafico es un agente que se encarga de administrar y controlar el tráfico
+ * en un entorno urbano. Este agente mantiene un registro de las posiciones ocupadas en el entorno
+ * y se comunica con otros agentes como coches y semáforos para coordinar sus acciones.
+ */
 public class AgenteControlTrafico extends Agent {
+
+    private static final Logger logger = LoggerController.getInstance().getLogger();
     private Celda[][] entornoUrbano;
     private boolean[][] posicionesOcupadas;
-
     private List<Semaforo> semaforos;
 
+    /**
+     * Método que se ejecuta cuando se inicia el agente. Registra el agente en el DF
+     * e inicializa el entorno urbano y los comportamientos del agente.
+     */
     protected void setup() {
-
-        System.out.println("My local name is " + getAID().getLocalName());
-
-        //Recuperamos la matriz de tráfico
-        EntornoUrbanoSingleton instancia = EntornoUrbanoSingleton.getInstance();
-        entornoUrbano = instancia.getEntornoUrbano();
-        semaforos = instancia.getSemaforos();
-        incicilizarPosicionesOcupadas();
-
-        //Registro el agente en el DF
+        logger.info("Creación de agente:  " + getAID().getLocalName());
+        inicializarEntornoUrbano();
         registrarAgente();
-        ParallelBehaviour parallelBehaviour = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ALL);
-        parallelBehaviour.addSubBehaviour(new ComportamientoCentralitaRecepcionMensajesCoches(this));
-        parallelBehaviour.addSubBehaviour(new ComportamientoCentralitaRecepcionMensajesSemaforos(this));
-        addBehaviour(parallelBehaviour);
-
+        iniciarComportamientos();
     }
 
-    private void incicilizarPosicionesOcupadas() {
+    /**
+     * Inicializa el entorno urbano y la lista de semáforos a partir de la instancia de EntornoUrbanoManager.
+     */
+    private void inicializarEntornoUrbano() {
+        EntornoUrbanoManager instancia = EntornoUrbanoManager.getInstance();
+        entornoUrbano = instancia.getEntornoUrbano();
+        semaforos = instancia.getSemaforos();
+        inicializarPosicionesOcupadas();
+    }
+
+    /**
+     * Inicializa la matriz de posiciones ocupadas con todas las posiciones desocupadas.
+     */
+    private void inicializarPosicionesOcupadas() {
         int filas = entornoUrbano.length;
         int columnas = entornoUrbano[0].length;
 
         posicionesOcupadas = new boolean[filas][columnas];
 
-        // Inicializa la matriz posicionesOcupadas con 'false' (ninguna posición ocupada)
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 posicionesOcupadas[i][j] = false;
@@ -53,17 +64,17 @@ public class AgenteControlTrafico extends Agent {
         }
     }
 
+    /**
+     * Registra el agente en el DF con un servicio de tipo "control-trafico".
+     */
     private void registrarAgente() {
-        // Crear una descripción del agente
         DFAgentDescription dfd = new DFAgentDescription();
-        dfd.setName(getAID()); // Asignar el AID (Agent ID) del agente
+        dfd.setName(getAID());
 
-        // Crear un servicio y asignar un tipo
         ServiceDescription sd = new ServiceDescription();
         sd.setType("control-trafico");
-        sd.setName(getLocalName()); // Asignar el nombre local del agente como el nombre del servicio
+        sd.setName(getLocalName());
 
-        // Añadir el servicio a la descripción del agente y registrar en el DF
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
@@ -72,12 +83,21 @@ public class AgenteControlTrafico extends Agent {
         }
     }
 
+    /**
+     * Inicia los comportamientos del agente, agregándolos como subcomportamientos en un ParallelBehaviour.
+     */
+    private void iniciarComportamientos() {
+        ParallelBehaviour parallelBehaviour = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ALL);
+        parallelBehaviour.addSubBehaviour(new ComportamientoCentralitaRecepcionMensajesCoches(this));
+        parallelBehaviour.addSubBehaviour(new ComportamientoCentralitaRecepcionMensajesSemaforos(this));
+        addBehaviour(parallelBehaviour);
+    }
+
     @Override
     protected void takeDown() {
-        // Eliminar el registro del agente en el DF
         try {
             DFService.deregister(this);
-            System.out.println(getLocalName() + ": Deregistrado  from the DF.");
+            logger.info(getLocalName() + ": Deregistrado from the DF.");
         } catch (FIPAException e) {
             e.printStackTrace();
         }
@@ -85,19 +105,35 @@ public class AgenteControlTrafico extends Agent {
         super.takeDown();
     }
 
-    public synchronized boolean estaOcupada(Coordenada coordenadas) {
+    /**
+     * Comprueba si una posición en el entorno urbano está ocupada.
+     *
+     * @param coordenadas Las coordenadas de la posición a verificar.
+     * @return true si la posición está ocupada, false en caso contrario.
+     */
+    public synchronized boolean esPosicionOcupada(Coordenada coordenadas) {
         return posicionesOcupadas[coordenadas.x][coordenadas.y];
     }
 
+    /**
+     * Marca una posición en el entorno urbano como ocupada o desocupada.
+     *
+     * @param coordenadas Las coordenadas de la posición a marcar.
+     * @param ocupada     true si la posición debe marcarse como ocupada, false si debe marcarse como desocupada.
+     */
     public synchronized void marcarPosicion(Coordenada coordenadas, boolean ocupada) {
-         posicionesOcupadas[coordenadas.x][coordenadas.y] = ocupada;
+        posicionesOcupadas[coordenadas.x][coordenadas.y] = ocupada;
     }
 
-    public synchronized void cambioDireccionPermitidaSemaforo(Semaforo semaforo) {
-        if(semaforos.contains(semaforo) && estaOcupada(semaforo.getCoordenadas())){
-            System.out.println("Informar cambio de direccion para coche");
+    /**
+     * Actualiza la dirección permitida en un semáforo y envía un mensaje a los coches afectados si es necesario.
+     *
+     * @param semaforo El semáforo cuya dirección permitida ha cambiado.
+     */
+    public synchronized void actualizarDireccionPermitidaSemaforo(Semaforo semaforo) {
+        if (semaforos.contains(semaforo) && esPosicionOcupada(semaforo.getCoordenadas())) {
+            // TODO: 01/04/2023 "Informar cambio de direccion para coche"
+            logger.info("Informar cambio de direccion para coche en el semaforo " + semaforo.getCoordenadas() + " direccion " + semaforo.getDireccion());
         }
     }
-
-
 }

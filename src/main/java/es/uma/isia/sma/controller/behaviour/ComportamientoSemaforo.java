@@ -1,6 +1,7 @@
 package es.uma.isia.sma.controller.behaviour;
 
 import es.uma.isia.sma.controller.AgenteSemaforo;
+import es.uma.isia.sma.controller.LoggerController;
 import es.uma.isia.sma.model.celdas.Semaforo;
 import jade.core.AID;
 import jade.core.behaviours.WakerBehaviour;
@@ -8,6 +9,8 @@ import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Clase ComportamientoSemaforo que representa el comportamiento del agente semáforo en el simulador.
@@ -16,6 +19,7 @@ import java.util.Random;
  */
 public class ComportamientoSemaforo extends WakerBehaviour {
 
+    private static final Logger logger = LoggerController.getInstance().getLogger();
     private static final int MIN_PERIOD = 2000;
     private static final int MAX_PERIOD = 5000;
 
@@ -41,7 +45,7 @@ public class ComportamientoSemaforo extends WakerBehaviour {
      */
     protected void onWake() {
 
-        agenteSemaforo.cambiaDireccionPermitida();
+        agenteSemaforo.cambiarDireccionPermitida();
         enviarMensajeCambioDireccionPermitidaSemaforo();
 
         // resetea el tiempo
@@ -63,7 +67,7 @@ public class ComportamientoSemaforo extends WakerBehaviour {
                 mensaje.setContentObject(semaforo);
                 agenteSemaforo.send(mensaje);
             } catch (IOException e) {
-               // System.err.println(getClass() + " " + e.getMessage());
+                logger.log(Level.WARNING, "Error al enviar el mensaje de cambio de dirección permitida en un semáforo ", e);
             }
         }
     }

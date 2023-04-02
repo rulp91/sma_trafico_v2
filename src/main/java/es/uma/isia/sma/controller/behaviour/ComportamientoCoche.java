@@ -1,6 +1,7 @@
 package es.uma.isia.sma.controller.behaviour;
 
 import es.uma.isia.sma.controller.AgenteCoche;
+import es.uma.isia.sma.controller.LoggerController;
 import es.uma.isia.sma.model.celdas.CeldaTransitable;
 import jade.core.AID;
 import jade.core.behaviours.TickerBehaviour;
@@ -9,19 +10,20 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Esta clase define el comportamiento del agente Coche. El agente Coche es un agente que envía un mensaje
- * a un agente Scene solicitando la siguiente celda a la que debe avanzar y espera una respuesta. En función
- * de la respuesta recibida, el agente Coche avanza a la siguiente celda o no lo hace.
- * Esta clase extiende de la clase TickerBehaviour, que define un comportamiento periódico.
+ * La clase ComportamientoCoche extiende TickerBehaviour y define el comportamiento del agente Coche en el sistema.
+ * El agente Coche envía periódicamente un mensaje al agente ControlTrafico solicitando la siguiente celda a la que
+ * debe avanzar. Dependiendo de la respuesta recibida del agente ControlTrafico, el agente Coche avanzará a la siguiente
+ * celda o permanecerá en su posición actual.
+ * <p>
+ * Este comportamiento se ejecuta periódicamente con un intervalo de tiempo predefinido de 1 segundo
  */
 public class ComportamientoCoche extends TickerBehaviour {
 
-    /**
-     * El período de tiempo entre dos ejecuciones del comportamiento, expresado en milisegundos.
-     */
-    private static final int period = 1000;
+    private static final Logger logger = LoggerController.getInstance().getLogger();
 
     /**
      * El agente Coche al que pertenece este comportamiento.
@@ -34,7 +36,7 @@ public class ComportamientoCoche extends TickerBehaviour {
      * @param a El agente Coche al que pertenece este comportamiento.
      */
     public ComportamientoCoche(AgenteCoche a) {
-        super(a, period);
+        super(a, 1000);
         coche = a;
     }
 
@@ -46,49 +48,56 @@ public class ComportamientoCoche extends TickerBehaviour {
      * si la respuesta es negativa, el agente Coche no avanza.
      */
     protected void onTick() {
-
-
-        // Establecer destinatario del mensaje (Agente Scene)
-        AID destinatario = coche.getAIDAgenteControlTrafico();
-        if(destinatario!=null) {
-            ACLMessage mensage = new ACLMessage(ACLMessage.REQUEST);
-            mensage.addReceiver(destinatario);
-            // Establecer contenido del mensaje
-            try {
-
-                mensage.setContent("AvanceCoche");
-                mensage.setContentObject(coche.getCeldaActual());
-
-                // Establecer el protocolo FIPA-Request
-                mensage.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-
-                // Establecer la codificación del mensaje
-                mensage.setLanguage("Java");
-                mensage.setOntology("Ontologia de Coches");
-
-                // Enviar mensaje
-                coche.send(mensage);
-
-                // Esperar respuesta
-                ACLMessage respuesta = coche.blockingReceive();
-                if (respuesta != null) {
-                    if (respuesta.getPerformative() == ACLMessage.AGREE) {
-                        CeldaTransitable siguienteCelda = (CeldaTransitable) respuesta.getContentObject();
-                        coche.avance(siguienteCelda);
-                        System.out.println("El coche "+coche.getAID().getLocalName()+" avanza a "+siguienteCelda.getCoordenadas());
-                    } else if (respuesta.getPerformative() == ACLMessage.REFUSE) {
-                        //System.out.println("El agente Scene ha rechazado la petición.");
-                    } else {
-                        //System.out.println("El agente Scene ha respondido con un mensaje no esperado.");
-                    }
-                } else {
-                    block();
-                }
-            } catch (IOException e) {
-               // System.err.println(getClass() + " " + e.getMessage());
-            } catch (UnreadableException e) {
-              //  System.err.println(getClass() + " " + e.getMessage());
+        AID destinatario = coche.getAgenteControlTraficoAID();
+        if (destinatario != null) {
+            solicitarSiguienteCeldaTransitable(destinatario);
+            ACLMessage respuesta = coche.blockingReceive();
+            if (respuesta != null) {
+                procesarRespuestaControlTrafico(respuesta);
+            } else {
+                block();
             }
         }
     }
+
+    /**
+     * Envía una solicitud al agente ControlTrafico para obtener la siguiente CeldaTransitable en la que el agente Coche
+     * puede avanzar. La solicitud se realiza utilizando un mensaje FIPA-REQUEST con el contenido "AvanceCoche" y el objeto
+     * CeldaTransitable actual del agente Coche.
+     *
+     * @param destinatario El AID del agente ControlTrafico al que se enviará la solicitud.
+     */
+    private void solicitarSiguienteCeldaTransitable(AID destinatario) {
+        ACLMessage mensaje = new ACLMessage(ACLMessage.REQUEST);
+        mensaje.addReceiver(destinatario);
+        try {
+            mensaje.setContent("AvanceCoche");
+            mensaje.setContentObject(coche.getCeldaActual());
+            mensaje.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+            mensaje.setLanguage("Java");
+            mensaje.setOntology("Ontologia de Coches");
+            coche.send(mensaje);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Error al enviar el mensaje de solicitud de siguiente celda", e);
+        }
+    }
+
+    /**
+     * Procesa la respuesta recibida del agente ControlTrafico. Si la respuesta es de tipo AGREE, el agente Coche avanza
+     * a la siguiente CeldaTransitable proporcionada en el mensaje. Si la respuesta es de otro tipo, no se realiza ninguna acción.
+     *
+     * @param respuestaControlTrafico El mensaje ACLMessage que contiene la respuesta del agente ControlTrafico.
+     */
+    private void procesarRespuestaControlTrafico(ACLMessage respuestaControlTrafico) {
+        try {
+            if (respuestaControlTrafico.getPerformative() == ACLMessage.AGREE) {
+                CeldaTransitable siguienteCelda = (CeldaTransitable) respuestaControlTrafico.getContentObject();
+                coche.avance(siguienteCelda);
+                logger.log(Level.INFO, "El coche " + coche.getAID().getLocalName() + " avanza a " + siguienteCelda.getCoordenadas());
+            }
+        } catch (UnreadableException e) {
+            logger.log(Level.WARNING, "Error al leer el contenido del mensaje de respuesta", e);
+        }
+    }
+
 }

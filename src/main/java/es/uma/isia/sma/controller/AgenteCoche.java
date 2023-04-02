@@ -9,16 +9,20 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Clase AgenteCoche que representa un agente coche en el simulador.
  * Extiende la clase Agent de Jade y se encarga de gestionar el comportamiento
  * del coche.
  */
-public class AgenteCoche  extends Agent {
+public class AgenteCoche extends Agent {
+    private static final Logger logger = LoggerController.getInstance().getLogger();
 
     private CeldaTransitable celdaActual;
 
-    private AID foundAgent;
+    private AID agenteControlTraficoAID;
 
     @Override
     /**
@@ -27,19 +31,21 @@ public class AgenteCoche  extends Agent {
      */
     protected void setup() {
 
-//        // Se le pasa como parámetro la celda que ocupa el coche
-//        Object[] args = getArguments();
-//        if (args == null || args.length == 0)
-//            doDelete();
-
-        System.out.println("My local name is " + getAID().getLocalName());
+        logger.info("Creación de agente:  " + getAID().getLocalName());
 
         //Registro el agente en el DF
         registrarAgente();
 
-       addBehaviour(new ComportamientoCoche(this));
+        // Añadir comportamiento
+        addBehaviour(new ComportamientoCoche(this));
     }
 
+    /**
+     * Método que registra el agente en el servicio de directorio (DF) de Jade.
+     * Crea una descripción del agente, asigna un servicio de tipo "coches" y lo
+     * añade a la descripción del agente. Luego, se registra la descripción del
+     * agente en el DF mediante DFService.register(this, dfd).
+     */
     private void registrarAgente() {
         // Crear una descripción del agente
         DFAgentDescription dfd = new DFAgentDescription();
@@ -55,7 +61,7 @@ public class AgenteCoche  extends Agent {
         try {
             DFService.register(this, dfd);
         } catch (FIPAException e) {
-            System.err.println(e);
+            logger.log(Level.WARNING, "Error al registrar el agente en el DF", e);
         }
     }
 
@@ -73,10 +79,10 @@ public class AgenteCoche  extends Agent {
      *
      * @return AID del agente que contreola el tráfico
      */
-    public AID getAIDAgenteControlTrafico() {
+    public AID getAgenteControlTraficoAID() {
 
-        if (foundAgent != null)
-            return foundAgent;
+        if (agenteControlTraficoAID != null)
+            return agenteControlTraficoAID;
 
         // Crear una descripción del agente y asignar un tipo de servicio
         DFAgentDescription dfd = new DFAgentDescription();
@@ -89,16 +95,16 @@ public class AgenteCoche  extends Agent {
             DFAgentDescription[] result = DFService.search(this, dfd);
 
             // Procesar los resultados y obtener el AID del primer agente encontrado
-            if (result.length > 0) {
-                foundAgent = result[0].getName();
-            } else {
-                System.out.println("No se encontraron agentes con el tipo de servicio especificado.");
-            }
+            if (result.length > 0)
+                agenteControlTraficoAID = result[0].getName();
+            else
+                logger.log(Level.INFO, "No se encontraron agentes con el tipo de servicio especificado.");
+
         } catch (FIPAException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Error al buscar el AID del agente de control de tráfico", e);
         }
 
-        return foundAgent;
+        return agenteControlTraficoAID;
     }
 
     /**
@@ -115,9 +121,9 @@ public class AgenteCoche  extends Agent {
         // Eliminar el registro del agente en el DF
         try {
             DFService.deregister(this);
-            System.out.println(getLocalName() + ": Deregistrado  from the DF.");
+            logger.log(Level.INFO, getLocalName() + ": Deregistrado from the DF.");
         } catch (FIPAException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error al eliminar el registro del agente en el DF", e);
         }
 
         super.takeDown();

@@ -41,6 +41,7 @@ public class GeneradorEntornoUrbano {
         System.out.println(entornoUrbano);
         return entornoUrbano.generarEntornoUrbano();
     }
+
     /**
      * Retorna una matriz de direcciones
      * @return
@@ -332,11 +333,12 @@ public class GeneradorEntornoUrbano {
      * explorando todos los caminos posibles a partir del nodo actual antes de volver atrás
      * y continuar explorando otros caminos
      *
-     * @param visitado
-     * @param fila
-     * @param columna
-     * @param direccionAnterior
+     * @param visitado Matriz booleana que indica si un nodo ha sido visitado.
+     * @param fila Coordenada fila del nodo actual.
+     * @param columna Coordenada columna del nodo actual.
+     * @param direccionAnterior Dirección desde la que se llegó al nodo actual.
      */
+
     private void busquedaEnProfundidad(boolean[][] visitado, int fila, int columna, Direccion direccionAnterior) {
 
         // Si no está dentro del límite o está ya visitado
@@ -422,10 +424,10 @@ public class GeneradorEntornoUrbano {
     /**
      * Realiza la recursión de la busqueda en profundidad intentando continuar con la dirección anteriormente asignada
      *
-     * @param visitado
-     * @param fila
-     * @param columna
-     * @param direccion
+     * @param visitado Matriz booleana que indica si un nodo ha sido visitado.
+     * @param fila Coordenada fila del nodo actual.
+     * @param columna Coordenada columna del nodo actual.
+     * @param direccion Dirección desde la que se llegó al nodo actual.
      */
     private void recursionDfs(boolean[][] visitado, int fila, int columna, Direccion direccion) {
         try {
@@ -587,4 +589,5 @@ public class GeneradorEntornoUrbano {
 
         return ret.toString();
     }
+
 }
