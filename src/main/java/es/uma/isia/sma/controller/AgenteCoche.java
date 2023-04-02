@@ -1,9 +1,11 @@
 package es.uma.isia.sma.controller;
 
 import es.uma.isia.sma.controller.behaviour.ComportamientoCoche;
+import es.uma.isia.sma.controller.behaviour.ComportamientoCocheAvanceBajoDemanda;
 import es.uma.isia.sma.model.celdas.CeldaTransitable;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.ParallelBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -37,7 +39,14 @@ public class AgenteCoche extends Agent {
         registrarAgente();
 
         // Añadir comportamiento
-        addBehaviour(new ComportamientoCoche(this));
+        ParallelBehaviour parallelBehaviour = new ParallelBehaviour();
+
+        // Añadir comportamientos a ParallelBehaviour
+        parallelBehaviour.addSubBehaviour(new ComportamientoCoche(this));
+        parallelBehaviour.addSubBehaviour(new ComportamientoCocheAvanceBajoDemanda(this));
+
+        // Añadir ParallelBehaviour al agente
+        addBehaviour(parallelBehaviour);
     }
 
     /**

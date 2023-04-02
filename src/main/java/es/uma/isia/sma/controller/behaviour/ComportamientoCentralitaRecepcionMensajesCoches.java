@@ -1,11 +1,13 @@
 package es.uma.isia.sma.controller.behaviour;
 
+import es.uma.isia.sma.controller.AgenteCoche;
 import es.uma.isia.sma.controller.AgenteControlTrafico;
 import es.uma.isia.sma.controller.EntornoUrbanoManager;
 import es.uma.isia.sma.controller.LoggerController;
 import es.uma.isia.sma.model.celdas.Celda;
 import es.uma.isia.sma.model.celdas.CeldaTransitable;
 import es.uma.isia.sma.model.celdas.Semaforo;
+import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
@@ -63,16 +65,17 @@ public class ComportamientoCentralitaRecepcionMensajesCoches extends SimpleBehav
         try {
             CeldaTransitable celdaActual = (CeldaTransitable) msg.getContentObject();
             CeldaTransitable siguienteCelda = EntornoUrbanoManager.getInstance().getSiguienteCeldaTransitable(celdaActual);
+            AID agenteCocheAID = msg.getSender();
             if (siguienteCelda != null && !agenteControlTrafico.esPosicionOcupada(siguienteCelda.getCoordenadas())) {
                 // Si la siguiente celda es un semáforo, verifica si la dirección permitida es la actual
                 if (esSemaforoConDireccionPermitida(siguienteCelda, celdaActual)) {
                     logger.info("Es un semaforo y la dirección está permitida");
-                    liberarCeldaActual(celdaActual);
-                    ocuparSiguienteCelda(siguienteCelda);
+                    liberarCeldaActual(celdaActual, agenteCocheAID);
+                    ocuparSiguienteCelda(siguienteCelda, agenteCocheAID);
                     enviarMensajeAvance(msg, siguienteCelda);
                 } else if (!(siguienteCelda instanceof Semaforo)) {
-                    liberarCeldaActual(celdaActual);
-                    ocuparSiguienteCelda(siguienteCelda);
+                    liberarCeldaActual(celdaActual, agenteCocheAID);
+                    ocuparSiguienteCelda(siguienteCelda, agenteCocheAID);
                     enviarMensajeAvance(msg, siguienteCelda);
                 } else {
                     enviarMensajeRechazoAvance(msg);
@@ -135,9 +138,9 @@ public class ComportamientoCentralitaRecepcionMensajesCoches extends SimpleBehav
      *
      * @param celdaActual la celda en la que se encuentra actualmente el vehículo.
      */
-    private void liberarCeldaActual(Celda celdaActual) {
+    private void liberarCeldaActual(Celda celdaActual, AID agenteCocheAid) {
         if (celdaActual != null)
-            agenteControlTrafico.marcarPosicion(celdaActual.getCoordenadas(), false);
+            agenteControlTrafico.marcarPosicion(celdaActual.getCoordenadas(), agenteCocheAid, false);
     }
 
     /**
@@ -145,8 +148,8 @@ public class ComportamientoCentralitaRecepcionMensajesCoches extends SimpleBehav
      *
      * @param siguienteCelda la celda a la que se va a avanzar.
      */
-    private void ocuparSiguienteCelda(Celda siguienteCelda) {
-        agenteControlTrafico.marcarPosicion(siguienteCelda.getCoordenadas(), true);
+    private void ocuparSiguienteCelda(Celda siguienteCelda, AID agenteCocheAid) {
+        agenteControlTrafico.marcarPosicion(siguienteCelda.getCoordenadas(), agenteCocheAid, true);
     }
 
     @Override

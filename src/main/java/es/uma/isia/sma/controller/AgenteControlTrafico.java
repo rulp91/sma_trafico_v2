@@ -5,14 +5,18 @@ import es.uma.isia.sma.controller.behaviour.ComportamientoCentralitaRecepcionMen
 import es.uma.isia.sma.model.celdas.Celda;
 import es.uma.isia.sma.model.celdas.Semaforo;
 import es.uma.isia.sma.model.coordenadas.Coordenada;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -26,6 +30,7 @@ public class AgenteControlTrafico extends Agent {
     private Celda[][] entornoUrbano;
     private boolean[][] posicionesOcupadas;
     private List<Semaforo> semaforos;
+    private Map<Coordenada, AID> vehiculosEnCeldas = new HashMap<>();
 
     /**
      * Método que se ejecuta cuando se inicia el agente. Registra el agente en el DF
@@ -121,7 +126,12 @@ public class AgenteControlTrafico extends Agent {
      * @param coordenadas Las coordenadas de la posición a marcar.
      * @param ocupada     true si la posición debe marcarse como ocupada, false si debe marcarse como desocupada.
      */
-    public synchronized void marcarPosicion(Coordenada coordenadas, boolean ocupada) {
+    public synchronized void marcarPosicion(Coordenada coordenadas, AID agenteCocheAID, boolean ocupada) {
+        if (ocupada)
+            vehiculosEnCeldas.put(coordenadas, agenteCocheAID);
+        else
+            vehiculosEnCeldas.remove(coordenadas);
+
         posicionesOcupadas[coordenadas.x][coordenadas.y] = ocupada;
     }
 
@@ -131,9 +141,25 @@ public class AgenteControlTrafico extends Agent {
      * @param semaforo El semáforo cuya dirección permitida ha cambiado.
      */
     public synchronized void actualizarDireccionPermitidaSemaforo(Semaforo semaforo) {
-        if (semaforos.contains(semaforo) && esPosicionOcupada(semaforo.getCoordenadas())) {
-            // TODO: 01/04/2023 "Informar cambio de direccion para coche"
-            logger.info("Informar cambio de direccion para coche en el semaforo " + semaforo.getCoordenadas() + " direccion " + semaforo.getDireccion());
+        Coordenada coordenada = semaforo.getCoordenadas();
+        if (semaforos.contains(semaforo) && esPosicionOcupada(coordenada)) {
+            //Recuperamos el AID del coche a partir de sus coordenadas
+            AID agenteCocheAID = vehiculosEnCeldas.get(coordenada);
+            enviarMensajePeticionAvance(agenteCocheAID);
+            logger.info("Informar cambio de direccion para " + agenteCocheAID.getLocalName() + " en el semaforo " + semaforo.getCoordenadas() + " direccion " + semaforo.getDireccion());
         }
+    }
+
+    /**
+     * Envía un mensaje de petición de avance a un agente coche específico.
+     * El mensaje tiene una performativa REQUEST y el contenido "AvanceCocheCambioSemaforo".
+     *
+     * @param agenteCocheAID El AID del agente coche al que se enviará la petición de avance.
+     */
+    private void enviarMensajePeticionAvance(AID agenteCocheAID) {
+        ACLMessage mensaje = new ACLMessage(ACLMessage.REQUEST);
+        mensaje.addReceiver(agenteCocheAID);
+        mensaje.setContent("AvanceCocheCambioSemaforo");
+        send(mensaje);
     }
 }
