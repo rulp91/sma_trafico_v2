@@ -41,7 +41,7 @@ public class EntornoUrbanoManager {
     /**
      * Genera un entorno urbano con el número de filas y columnas especificado.
      *
-     * @param filas Número de filas del entorno urbano.
+     * @param filas    Número de filas del entorno urbano.
      * @param columnas Número de columnas del entorno urbano.
      */
     public void generaEntornoUrbano(int filas, int columnas) {
@@ -155,4 +155,23 @@ public class EntornoUrbanoManager {
         return null;
     }
 
+    /**
+     * Obtiene el número total de celdas transitables en el entorno urbano.
+     * Este método recorre el array bidimensional entornoUrbano y cuenta todas
+     * las instancias de CeldaTransitable en dicho array.
+     *
+     * @return int El número total de celdas transitables en el entorno urbano.
+     */
+    public int getNumeroCeldasTransitables() {
+        int numeroNumeroCeldasTransitables = 0;
+        for (int i = 0; i < entornoUrbano.length; i++) {
+            for (int j = 0; j < entornoUrbano[i].length; j++) {
+                Celda celda = entornoUrbano[i][j];
+                if (celda instanceof CeldaTransitable)
+                    numeroNumeroCeldasTransitables++;
+            }
+        }
+
+        return numeroNumeroCeldasTransitables;
+    }
 }

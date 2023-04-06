@@ -140,12 +140,12 @@ public class AgenteSimuladorEntorno extends Agent {
 
 
     /**
-     * Calcula el número de vehículos a crear en el entorno de simulación.
+     * Calcula el número de vehículos a crear en el entorno de simulación (sobre el número total de celdas transitables).
      *
      * @return El número de vehículos a crear.
      */
     public int getNumeroVehiculosACrear() {
-        return (int) (filas * columnas * porcentajeVehiculos);
+        return (int) (EntornoUrbanoManager.getInstance().getNumeroCeldasTransitables() * porcentajeVehiculos);
     }
 
     /**
@@ -155,6 +155,15 @@ public class AgenteSimuladorEntorno extends Agent {
      */
     public int getTimeoutSimulacion() {
         return timeoutSimulacion;
+    }
+
+    /**
+     * Retorna el porcentaje de celdas no transitables (sobre el número total de celdas).
+     *
+     * @return número de celdas no transitable
+     */
+    public int getPorcentajeCeldasNoTransitables() {
+        return (int) (filas * columnas * porcentajeCeldasNoTransitables);
     }
 
     /**
@@ -181,8 +190,6 @@ public class AgenteSimuladorEntorno extends Agent {
         return columnas;
     }
 
-    public int getPorcentajeCeldasNoTransitables() {
-        return (int) (filas * columnas * porcentajeCeldasNoTransitables);
-    }
+
 
 }
