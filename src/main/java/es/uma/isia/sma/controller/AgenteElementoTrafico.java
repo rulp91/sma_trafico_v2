@@ -1,7 +1,5 @@
 package es.uma.isia.sma.controller;
 
-import es.uma.isia.sma.controller.AgenteControlTrafico;
-import es.uma.isia.sma.controller.LoggerController;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
