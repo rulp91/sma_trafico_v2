@@ -535,11 +535,12 @@ public class GeneradorEntornoUrbano {
     }
 
     /**
-     * Indica si pasada una fila y una columna pertenecen a la casilla que se considera de entrada
+     * Verifica si las coordenadas (fila, columna) corresponden a la casilla inicial en la matriz.
      *
-     * @param fila
-     * @param columna
-     * @return
+     * @param fila    El índice de la fila en la matriz.
+     * @param columna El índice de la columna en la matriz.
+     * @return Verdadero (true) si las coordenadas corresponden a la casilla inicial, falso (false) en caso contrario,
+     *         la casilla inicial se encuentra en la esquina inferior izquierda de la matriz.
      */
     private boolean esCasillaInicial(int fila, int columna) {
         return fila == filas - 1 && columna == 0;
