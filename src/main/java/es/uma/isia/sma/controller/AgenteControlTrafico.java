@@ -59,14 +59,7 @@ public class AgenteControlTrafico extends Agent {
     private void inicializarPosicionesOcupadas() {
         int filas = entornoUrbano.length;
         int columnas = entornoUrbano[0].length;
-
         posicionesOcupadas = new boolean[filas][columnas];
-
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                posicionesOcupadas[i][j] = false;
-            }
-        }
     }
 
     /**
