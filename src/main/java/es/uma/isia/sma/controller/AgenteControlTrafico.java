@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * y se comunica con otros agentes como coches y semáforos para coordinar sus acciones.
  */
 public class AgenteControlTrafico extends Agent {
-
+    public static final String CONTROL_TRAFICO_SERVICE_DESCRIPTION = "control-trafico";
     private static final Logger logger = LoggerController.getInstance().getLogger();
     private Celda[][] entornoUrbano;
     private boolean[][] posicionesOcupadas;
@@ -77,7 +77,7 @@ public class AgenteControlTrafico extends Agent {
         dfd.setName(getAID());
 
         ServiceDescription sd = new ServiceDescription();
-        sd.setType("control-trafico");
+        sd.setType(CONTROL_TRAFICO_SERVICE_DESCRIPTION);
         sd.setName(getLocalName());
 
         dfd.addServices(sd);

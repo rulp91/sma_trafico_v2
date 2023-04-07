@@ -14,12 +14,15 @@ import jade.domain.FIPAException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+
 /**
  * Clase AgenteCoche que representa un agente coche en el simulador.
  * Extiende la clase Agent de Jade y se encarga de gestionar el comportamiento
  * del coche.
  */
 public class AgenteCoche extends Agent {
+
     private static final Logger logger = LoggerController.getInstance().getLogger();
 
     private CeldaTransitable celdaActual;
@@ -96,7 +99,7 @@ public class AgenteCoche extends Agent {
         // Crear una descripción del agente y asignar un tipo de servicio
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
-        sd.setType("control-trafico");
+        sd.setType(AgenteControlTrafico.CONTROL_TRAFICO_SERVICE_DESCRIPTION);
         dfd.addServices(sd);
 
         try {

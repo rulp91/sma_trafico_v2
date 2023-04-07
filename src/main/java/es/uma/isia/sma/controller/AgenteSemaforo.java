@@ -20,6 +20,7 @@ import java.util.logging.Logger;
  */
 public class AgenteSemaforo extends Agent {
 
+
     private static final Logger logger = LoggerController.getInstance().getLogger();
     private Semaforo semaforo;
     private AID agenteControlTraficoAID = null;
@@ -84,7 +85,7 @@ public class AgenteSemaforo extends Agent {
         // Crear una descripción del agente y asignar un tipo de servicio
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
-        sd.setType("control-trafico");
+        sd.setType(AgenteControlTrafico.CONTROL_TRAFICO_SERVICE_DESCRIPTION);
         dfd.addServices(sd);
 
         try {
