@@ -3,7 +3,6 @@ package es.uma.isia.sma.controller.behaviour;
 import es.uma.isia.sma.controller.AgenteSemaforo;
 import es.uma.isia.sma.controller.LoggerController;
 import es.uma.isia.sma.model.celdas.Semaforo;
-import jade.core.AID;
 import jade.core.behaviours.WakerBehaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -11,6 +10,8 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static es.uma.isia.sma.controller.IACLTiposMensaje.ACL_MENSAJE_TIPO_ACTUALIZACION_SEMAFORO;
 
 /**
  * Clase ComportamientoSemaforo que representa el comportamiento del agente semáforo en el simulador.
@@ -58,18 +59,17 @@ public class ComportamientoSemaforo extends WakerBehaviour {
      * El mensaje contiene el objeto Semaforo asociado al agente semáforo.
      */
     public void enviarMensajeCambioDireccionPermitidaSemaforo() {
-        AID receptor = agenteSemaforo.getAIDAgenteControlTrafico();
-        if(receptor!=null) {
-            ACLMessage mensaje = new ACLMessage(ACLMessage.INFORM);
-            mensaje.addReceiver(agenteSemaforo.getAIDAgenteControlTrafico());
-            try {
-                Semaforo semaforo = agenteSemaforo.getSemaforo();
-                mensaje.setContentObject(semaforo);
-                agenteSemaforo.send(mensaje);
-            } catch (IOException e) {
-                logger.log(Level.WARNING, "Error al enviar el mensaje de cambio de dirección permitida en un semáforo ", e);
-            }
+        ACLMessage mensaje = new ACLMessage(ACLMessage.INFORM);
+        mensaje.addReceiver(agenteSemaforo.getAIDAgenteControlTrafico());
+        try {
+            mensaje.setProtocol(ACL_MENSAJE_TIPO_ACTUALIZACION_SEMAFORO);
+            Semaforo semaforo = agenteSemaforo.getSemaforo();
+            mensaje.setContentObject(semaforo);
+            agenteSemaforo.send(mensaje);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Error al enviar el mensaje de cambio de dirección permitida en un semáforo ", e);
         }
+
     }
 
     /**

@@ -1,8 +1,13 @@
 package es.uma.isia.sma.controller;
 
 import es.uma.isia.sma.controller.behaviour.ComportamientoSemaforo;
+import es.uma.isia.sma.controller.behaviour.ComportamientoSemaforoManejarSuscripciones;
 import es.uma.isia.sma.model.celdas.Semaforo;
 import es.uma.isia.sma.model.coordenadas.Direccion;
+import jade.core.AID;
+import jade.core.behaviours.ParallelBehaviour;
+
+import static es.uma.isia.sma.controller.IDescripcionServicios.SEMAFOROS_SERVICE_DESCRIPTION;
 
 /**
  * Clase AgenteSemaforo que representa un agente semáforo en el simulador.
@@ -11,7 +16,7 @@ import es.uma.isia.sma.model.coordenadas.Direccion;
  */
 public class AgenteSemaforo extends AgenteElementoTrafico {
 
-    private static final String SEMAFOROS_SERVICE_DESCRIPTION = "semaforos";
+
     private Semaforo semaforo;
 
     @Override
@@ -28,8 +33,15 @@ public class AgenteSemaforo extends AgenteElementoTrafico {
         //Registro el agente en el DF
         registrarAgente(SEMAFOROS_SERVICE_DESCRIPTION);
 
-        // Añadir comportamiento
-        addBehaviour(new ComportamientoSemaforo(this));
+        // Crear un ParallelBehaviour
+        ParallelBehaviour parallelBehaviour = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ALL);
+
+        // Añadir comportamientos al ParallelBehaviour
+        parallelBehaviour.addSubBehaviour(new ComportamientoSemaforo(this));
+        parallelBehaviour.addSubBehaviour(new ComportamientoSemaforoManejarSuscripciones(this));
+
+        // Añadir el ParallelBehaviour al agente
+        addBehaviour(parallelBehaviour);
     }
 
     /**
@@ -61,4 +73,12 @@ public class AgenteSemaforo extends AgenteElementoTrafico {
         }
     }
 
+    /**
+     * Establece el AID del agente de control de tráfico asociado a este agente.
+     *
+     * @param aid El AID del agente de control de tráfico.
+     */
+    public void setAgenteControlTraficoAID(AID aid) {
+        agenteControlTraficoAID = aid;
+    }
 }

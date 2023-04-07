@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static es.uma.isia.sma.controller.IACLTiposMensaje.ACL_MENSAJE_TIPO_AVANCE_COCHE;
+
 /**
  * La clase ComportamientoCoche extiende TickerBehaviour y define el comportamiento del agente Coche en el sistema.
  * El agente Coche envía periódicamente un mensaje al agente ControlTrafico solicitando la siguiente celda a la que
@@ -71,7 +73,7 @@ public class ComportamientoCoche extends TickerBehaviour {
         ACLMessage mensaje = new ACLMessage(ACLMessage.REQUEST);
         mensaje.addReceiver(destinatario);
         try {
-            mensaje.setContent("AvanceCoche");
+            mensaje.setContent(ACL_MENSAJE_TIPO_AVANCE_COCHE);
             mensaje.setContentObject(coche.getCeldaActual());
             mensaje.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
             mensaje.setLanguage("Java");

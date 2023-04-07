@@ -14,10 +14,14 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static es.uma.isia.sma.controller.IACLTiposMensaje.ACL_MENSAJE_TIPO_AVANCE_COCHE_ACTUALIZACION_SEMAFORO;
+import static es.uma.isia.sma.controller.IDescripcionServicios.*;
 
 /**
  * La clase AgenteControlTrafico es un agente que se encarga de administrar y controlar el tráfico
@@ -25,7 +29,7 @@ import java.util.logging.Logger;
  * y se comunica con otros agentes como coches y semáforos para coordinar sus acciones.
  */
 public class AgenteControlTrafico extends Agent {
-    public static final String CONTROL_TRAFICO_SERVICE_DESCRIPTION = "control-trafico";
+
     private static final Logger logger = LoggerController.getInstance().getLogger();
     private Celda[][] entornoUrbano;
     private boolean[][] posicionesOcupadas;
@@ -40,6 +44,7 @@ public class AgenteControlTrafico extends Agent {
         logger.info("Creación de agente:  " + getAID().getLocalName());
         inicializarEntornoUrbano();
         registrarAgente();
+        suscribirseActualizacionesSemaforos();
         iniciarComportamientos();
     }
 
@@ -152,7 +157,47 @@ public class AgenteControlTrafico extends Agent {
     private void enviarMensajePeticionAvance(AID agenteCocheAID) {
         ACLMessage mensaje = new ACLMessage(ACLMessage.REQUEST);
         mensaje.addReceiver(agenteCocheAID);
-        mensaje.setContent("AvanceCocheCambioSemaforo");
+        mensaje.setContent(ACL_MENSAJE_TIPO_AVANCE_COCHE_ACTUALIZACION_SEMAFORO);
         send(mensaje);
+    }
+
+    /**
+     * Suscribe a este agente a las actualizaciones de semáforos.
+     * Envía mensajes de suscripción a todos los agentes semáforo encontrados en el servicio de directorio.
+     */
+    private void suscribirseActualizacionesSemaforos() {
+        List<AID> agentesSemaforoAID = buscarAgentesSemaforo();
+        for (AID agenteSemaforoAID : agentesSemaforoAID) {
+            ACLMessage subscribeMessage = new ACLMessage(ACLMessage.SUBSCRIBE);
+            subscribeMessage.addReceiver(agenteSemaforoAID);
+            subscribeMessage.setContent("Solicitud de suscripción a actualizaciones de semáforo");
+            subscribeMessage.setConversationId(SEMAFOROS_ACTUALIZACIONES_SERVICE_DESCRIPTION);
+            send(subscribeMessage);
+        }
+    }
+
+    /**
+     * Busca agentes semáforo registrados en el servicio de directorio (DF) y devuelve sus AID.
+     *
+     * @return Lista de AID de los agentes semáforo encontrados en el servicio de directorio.
+     */
+    private List<AID> buscarAgentesSemaforo() {
+        List<AID> agentesSemaforo = new ArrayList<>();
+
+        DFAgentDescription template = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType(SEMAFOROS_SERVICE_DESCRIPTION);
+        template.addServices(sd);
+
+        try {
+            DFAgentDescription[] result = DFService.search(this, template);
+            for (DFAgentDescription agent : result) {
+                agentesSemaforo.add(agent.getName());
+            }
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+
+        return agentesSemaforo;
     }
 }

@@ -5,6 +5,8 @@ import es.uma.isia.sma.controller.behaviour.ComportamientoCocheAvanceBajoDemanda
 import es.uma.isia.sma.model.celdas.CeldaTransitable;
 import jade.core.behaviours.ParallelBehaviour;
 
+import static es.uma.isia.sma.controller.IDescripcionServicios.COCHES_SERVICE_DESCRIPTION;
+
 
 /**
  * Clase AgenteCoche que representa un agente coche en el simulador.
@@ -12,8 +14,6 @@ import jade.core.behaviours.ParallelBehaviour;
  * del coche.
  */
 public class AgenteCoche extends AgenteElementoTrafico {
-
-    private static final String COCHES_SERVICE_DESCRIPTION = "coches";
 
     private CeldaTransitable celdaActual;
 

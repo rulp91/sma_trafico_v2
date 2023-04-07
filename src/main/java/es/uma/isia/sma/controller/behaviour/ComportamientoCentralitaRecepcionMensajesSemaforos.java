@@ -11,6 +11,8 @@ import jade.lang.acl.UnreadableException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static es.uma.isia.sma.controller.IACLTiposMensaje.ACL_MENSAJE_TIPO_ACTUALIZACION_SEMAFORO;
+
 /**
  * Comportamiento que se encarga de recibir los mensajes enviados por los agentes semáforo
  * y actualizar la dirección permitida en el agente control de tráfico.
@@ -36,20 +38,13 @@ public class ComportamientoCentralitaRecepcionMensajesSemaforos extends SimpleBe
      */
     @Override
     public void action() {
-        // Como enfoque alternativo a MessageTemplate.MatchContent, envío el objeto Semáforo directamente como contenido
-        // del mensaje y luego filtro los mensajes recibidos utilizando una condición personalizada en el comportamiento
-        // receptor. Esto se debe a que no me está funcionando MatchContent
-        MessageTemplate mt = MessageTemplate.and(
-                MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-                new MessageTemplate((ACLMessage msg) -> {
-                    try {
-                        return msg.getContentObject() instanceof Semaforo;
-                    } catch (UnreadableException e) {
-                        return false;
-                    }
-                })
+        MessageTemplate template = MessageTemplate.and(
+                MessageTemplate.MatchProtocol(ACL_MENSAJE_TIPO_ACTUALIZACION_SEMAFORO),
+                MessageTemplate.MatchPerformative(ACLMessage.INFORM)
         );
-        ACLMessage msg = agenteControlTrafico.receive(mt);
+
+        ACLMessage msg = agenteControlTrafico.receive(template);
+
         if (msg != null) {
             try {
                 Semaforo semaforo = (Semaforo) msg.getContentObject();

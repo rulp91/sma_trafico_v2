@@ -10,6 +10,8 @@ import jade.domain.FIPAException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static es.uma.isia.sma.controller.IDescripcionServicios.CONTROL_TRAFICO_SERVICE_DESCRIPTION;
+
 /**
  * Clase abstracta AgenteElementoTrafico que representa elementos de tráfico, como agentes de coches y semáforos.
  * Esta clase extiende la clase jade.core.Agent y proporciona métodos comunes para el registro y la búsqueda de
@@ -18,7 +20,7 @@ import java.util.logging.Logger;
 public abstract class AgenteElementoTrafico extends Agent {
     // Atributos comunes
     protected static final Logger logger = LoggerController.getInstance().getLogger();
-    protected AID agenteControlTraficoAID;
+    protected volatile AID agenteControlTraficoAID;
 
     /**
      * Método que registra el agente en el servicio de directorio (DF) de Jade.
@@ -57,7 +59,7 @@ public abstract class AgenteElementoTrafico extends Agent {
         // Crear una descripción del agente y asignar un tipo de servicio
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
-        sd.setType(AgenteControlTrafico.CONTROL_TRAFICO_SERVICE_DESCRIPTION);
+        sd.setType(CONTROL_TRAFICO_SERVICE_DESCRIPTION);
         dfd.addServices(sd);
 
         try {

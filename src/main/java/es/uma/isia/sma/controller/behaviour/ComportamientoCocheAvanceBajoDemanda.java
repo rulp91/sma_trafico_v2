@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static es.uma.isia.sma.controller.IACLTiposMensaje.ACL_MENSAJE_TIPO_AVANCE_COCHE;
+import static es.uma.isia.sma.controller.IACLTiposMensaje.ACL_MENSAJE_TIPO_AVANCE_COCHE_ACTUALIZACION_SEMAFORO;
+
 /**
  * La clase ComportamientoCocheAvanceBajoDemanda extiende CyclicBehaviour y define el comportamiento
  * del agente Coche en el sistema cuando debe avanzar bajo demanda. El agente Coche espera recibir
@@ -39,7 +42,7 @@ public class ComportamientoCocheAvanceBajoDemanda extends CyclicBehaviour {
     public void action() {
         ACLMessage msg = myAgent.receive();
 
-        if (msg != null && msg.getPerformative() == ACLMessage.REQUEST && "AvanceCocheCambioSemaforo".equals(msg.getContent())) {
+        if (msg != null && msg.getPerformative() == ACLMessage.REQUEST && ACL_MENSAJE_TIPO_AVANCE_COCHE_ACTUALIZACION_SEMAFORO.equals(msg.getContent())) {
             realizarPeticionAvance();
             ACLMessage respuesta = coche.blockingReceive();
             if (respuesta != null) {
@@ -61,7 +64,7 @@ public class ComportamientoCocheAvanceBajoDemanda extends CyclicBehaviour {
         ACLMessage mensaje = new ACLMessage(ACLMessage.REQUEST);
         mensaje.addReceiver(coche.getAIDAgenteControlTrafico());
         try {
-            mensaje.setContent("AvanceCoche");
+            mensaje.setContent(ACL_MENSAJE_TIPO_AVANCE_COCHE);
             mensaje.setContentObject(coche.getCeldaActual());
             mensaje.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
             mensaje.setLanguage("Java");
