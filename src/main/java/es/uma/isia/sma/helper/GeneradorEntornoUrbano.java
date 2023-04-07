@@ -9,6 +9,7 @@ import es.uma.isia.sma.model.celdas.Semaforo;
 import es.uma.isia.sma.model.utils.Par;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -24,12 +25,10 @@ public class GeneradorEntornoUrbano {
         this.columnas = columnas;
         matriz = new Direccion[filas][columnas];
         // inicialmente, todas las casillas son transitables
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                matriz[i][j] = Direccion.TRANSITABLE;
-            }
-        }
+        for (Direccion[] fila : matriz)
+            Arrays.fill(fila, Direccion.TRANSITABLE);
     }
+
     public  static Celda[][] generarMockup(){
         GeneradorEntornoUrbano entornoUrbano = new GeneradorEntornoUrbano(10, 20);
         entornoUrbano.generarCasillasNoTransitables(40);
@@ -43,16 +42,25 @@ public class GeneradorEntornoUrbano {
     }
 
     /**
-     * Retorna una matriz de direcciones
-     * @return
+     * Obtiene la matriz de direcciones que representa el entorno urbano.
+     *
+     * @return Una matriz bidimensional de tipo Direccion que representa las direcciones en el entorno urbano.
      */
     public Direccion[][] getMatriz() {
         return matriz;
     }
 
     /**
-     * Retorna una matriz de celdas
-     * @return
+     * Genera un entorno urbano a partir de la matriz de direcciones.
+     * Cada elemento de la matriz de direcciones se convierte en una instancia de la clase Celda.
+     *
+     * Los elementos en la matriz de direcciones pueden ser:
+     * - Bloque (no transitable)
+     * - Semaforo
+     * - Direcciones (Este, Oeste, Norte, Sur)
+     *
+     * @return Una matriz bidimensional de tipo Celda que representa el entorno urbano generado.
+     * @throws IllegalArgumentException Si algún elemento de la matriz de direcciones no corresponde a una dirección conocida.
      */
     public Celda[][] generarEntornoUrbano() {
         Celda[][] entorno = new Celda[filas][columnas];
@@ -143,7 +151,7 @@ public class GeneradorEntornoUrbano {
             if (estaDentroLimite(fila, puntoColision.y + 1) && matriz[fila][puntoColision.y + 1] != Direccion.BLOQUE)
                 distanciaBloqueY++;
 
-            int cambioY = 0;
+            int cambioY;
             if (distanciaBloqueX < distanciaBloqueY) {
                 cambioY = puntoColision.x;
                 if (!estaDentroLimite(fila + 1, cambioY) || (estaDentroLimite(fila, cambioY - 1) && matriz[fila][cambioY - 1] == Direccion.BLOQUE))
@@ -205,7 +213,7 @@ public class GeneradorEntornoUrbano {
             if (estaDentroLimite(puntoColision.y + 1, columna) && matriz[puntoColision.y + 1][columna] != Direccion.BLOQUE)
                 distanciaBloqueY++;
 
-            int cambioY = 0;
+            int cambioY;
             if (distanciaBloqueX < distanciaBloqueY) {
                 cambioY = puntoColision.x;
                 if (!estaDentroLimite(cambioY, columna + 1) || (estaDentroLimite(cambioY - 1, columna) && matriz[cambioY - 1][columna] == Direccion.BLOQUE))
@@ -527,11 +535,12 @@ public class GeneradorEntornoUrbano {
     }
 
     /**
-     * Indica si pasada una fila y una columna pertenecen a la casilla que se considera de entrada
+     * Verifica si las coordenadas (fila, columna) corresponden a la casilla inicial en la matriz.
      *
-     * @param fila
-     * @param columna
-     * @return
+     * @param fila    El índice de la fila en la matriz.
+     * @param columna El índice de la columna en la matriz.
+     * @return Verdadero (true) si las coordenadas corresponden a la casilla inicial, falso (false) en caso contrario,
+     *         la casilla inicial se encuentra en la esquina inferior izquierda de la matriz.
      */
     private boolean esCasillaInicial(int fila, int columna) {
         return fila == filas - 1 && columna == 0;
