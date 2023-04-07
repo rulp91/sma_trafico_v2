@@ -59,7 +59,7 @@ public class ComportamientoCocheAvanceBajoDemanda extends CyclicBehaviour {
      */
     private void realizarPeticionAvance() {
         ACLMessage mensaje = new ACLMessage(ACLMessage.REQUEST);
-        mensaje.addReceiver(coche.getAgenteControlTraficoAID());
+        mensaje.addReceiver(coche.getAIDAgenteControlTrafico());
         try {
             mensaje.setContent("AvanceCoche");
             mensaje.setContentObject(coche.getCeldaActual());

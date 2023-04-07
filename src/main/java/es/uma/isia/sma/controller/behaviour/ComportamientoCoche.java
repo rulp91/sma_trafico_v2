@@ -48,7 +48,7 @@ public class ComportamientoCoche extends TickerBehaviour {
      * si la respuesta es negativa, el agente Coche no avanza.
      */
     protected void onTick() {
-        AID destinatario = coche.getAgenteControlTraficoAID();
+        AID destinatario = coche.getAIDAgenteControlTrafico();
         if (destinatario != null) {
             solicitarSiguienteCeldaTransitable(destinatario);
             ACLMessage respuesta = coche.blockingReceive();
