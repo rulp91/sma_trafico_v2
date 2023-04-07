@@ -9,6 +9,7 @@ import es.uma.isia.sma.model.celdas.Semaforo;
 import es.uma.isia.sma.model.utils.Par;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -24,12 +25,10 @@ public class GeneradorEntornoUrbano {
         this.columnas = columnas;
         matriz = new Direccion[filas][columnas];
         // inicialmente, todas las casillas son transitables
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                matriz[i][j] = Direccion.TRANSITABLE;
-            }
-        }
+        for (Direccion[] fila : matriz)
+            Arrays.fill(fila, Direccion.TRANSITABLE);
     }
+
     public  static Celda[][] generarMockup(){
         GeneradorEntornoUrbano entornoUrbano = new GeneradorEntornoUrbano(10, 20);
         entornoUrbano.generarCasillasNoTransitables(40);
@@ -205,7 +204,7 @@ public class GeneradorEntornoUrbano {
             if (estaDentroLimite(puntoColision.y + 1, columna) && matriz[puntoColision.y + 1][columna] != Direccion.BLOQUE)
                 distanciaBloqueY++;
 
-            int cambioY = 0;
+            int cambioY;
             if (distanciaBloqueX < distanciaBloqueY) {
                 cambioY = puntoColision.x;
                 if (!estaDentroLimite(cambioY, columna + 1) || (estaDentroLimite(cambioY - 1, columna) && matriz[cambioY - 1][columna] == Direccion.BLOQUE))
